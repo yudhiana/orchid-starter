@@ -10,6 +10,7 @@ type LocalConfig struct {
 	AppPort    string `env:"APP_PORT" envDefault:"8080"`
 	AppHost    string `env:"APP_HOST" envDefault:"0.0.0.0"`
 	AppVersion string `env:"APP_VERSION" envDefault:"1.0.0"`
+	AppEnv     string `env:"APP_ENV"`
 
 	// mysql config
 	MySQLConfig MySQLConfig

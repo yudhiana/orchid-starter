@@ -1,4 +1,4 @@
-package server
+package gqlServer
 
 import (
 	"orchid-starter/config"
@@ -15,42 +15,18 @@ type Server struct {
 	app *iris.Application
 }
 
-func NewServer(container *bootstrap.Container) *Server {
+func NewGQLServer(container *bootstrap.Container) *Server {
 	srv := &Server{
 		cfg: container.GetConfig(),
 		app: container.GetApp(),
 	}
 
 	// Setup Global middlewares before server initialization
-	srv.setupMiddlewares(middleware.SetAPIVersion, middleware.Debug, middleware.Prometheus)
+	srv.setupMiddlewares(middleware.Debug)
 
 	// Setup routes after server initialization
 	srv.setupRoutes(container)
-
 	return srv
-}
-
-// setupRoutes configures all application routes
-func (s *Server) setupRoutes(container *bootstrap.Container) {
-	// Use centralized route management
-
-	// Define all route setup functions
-	routeSetups := []handler.RouteSetup{
-		handler.SetupDefaultRoutes, // Root routes
-		// Add more route setups here as your application grows
-	}
-
-	if s.cfg.AppEnv == "dev" {
-		routeSetups = append(routeSetups, handler.GQLRoutes)
-	}
-
-	handler.SetupAllRoutes(s.app, container, routeSetups...)
-}
-
-func (s *Server) setupMiddlewares(middlewares ...func(iris.Context)) {
-	for _, middleware := range middlewares {
-		s.app.Use(middleware)
-	}
 }
 
 func (s *Server) Run() error {
@@ -65,4 +41,22 @@ func (s *Server) Run() error {
 	// Start server
 	address := cfg.AppHost + ":" + cfg.AppPort
 	return app.Run(iris.Addr(address), iris.WithoutServerError(iris.ErrServerClosed))
+}
+
+func (s *Server) setupRoutes(container *bootstrap.Container) {
+	// Use centralized route management
+
+	// Define all route setup functions
+	routeSetups := []handler.RouteSetup{
+		handler.SetupDefaultRoutes, // Root routes
+		handler.GQLRoutes,
+		// Add more route setups here as your application grows
+	}
+	handler.SetupAllRoutes(s.app, container, routeSetups...)
+}
+
+func (s *Server) setupMiddlewares(middlewares ...func(iris.Context)) {
+	for _, middleware := range middlewares {
+		s.app.Use(middleware)
+	}
 }
