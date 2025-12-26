@@ -19,5 +19,6 @@ func GQLRoutes(app *iris.Application, container *bootstrap.Container) {
 
 	app.PartyFunc("/gql", func(graphHandler iris.Party) {
 		graphHandler.Post("/query", gqlHandler.NewGraphHandler(di).GQLHandler())
+		graphHandler.Get("/playground", gqlHandler.PlaygroundHandler())
 	})
 }

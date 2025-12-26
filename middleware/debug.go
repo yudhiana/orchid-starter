@@ -48,17 +48,25 @@ func Debug(ctx iris.Context) {
 
 func getBody(ctx iris.Context) (body any) {
 	if ctx.Method() == iris.MethodPost || ctx.Method() == iris.MethodPut {
-		r := ctx.Request()
 
-		body, err := ctx.GetBody()
+		r := ctx.Request()
+		bodyReq, err := ctx.GetBody()
 		if err != nil {
 			logging.NewLogger().Error("Failed to read request body", "error", err)
 			return nil
 		}
-		r.Body = io.NopCloser(bytes.NewBuffer(body))
+		r.Body = io.NopCloser(bytes.NewBuffer(bodyReq))
 
+		defer func() {
+			if r := recover(); r != nil {
+				logging.NewLogger().Error("Failed to read request body", "error", r)
+				body = string(bodyReq)
+			}
+		}()
+
+		bodyRequest := common.CleanString(string(bodyReq))
 		sanitizer := jsonSanitizer.NewJsonSanitizer()
-		return sanitizer.Sanitize(string(body))
+		return sanitizer.Sanitize(bodyRequest)
 
 	}
 	return

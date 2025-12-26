@@ -10,6 +10,7 @@ import (
 	"orchid-starter/modules/default/usecase"
 
 	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/kataras/iris/v12"
 	promHttp "github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -52,5 +53,13 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 	serverGraphql := handler.NewDefaultServer(generated.NewExecutableSchema(conf))
 	return func(ctx iris.Context) {
 		serverGraphql.ServeHTTP(ctx.ResponseWriter(), ctx.Request())
+	}
+}
+
+func PlaygroundHandler() iris.Handler {
+	h := playground.Handler("GraphQL Playground", "/gql/query")
+
+	return func(ctx iris.Context) {
+		h.ServeHTTP(ctx.ResponseWriter(), ctx.Request())
 	}
 }
