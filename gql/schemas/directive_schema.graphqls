@@ -1,0 +1,2 @@
+
+directive @authToken on FIELD_DEFINITION

@@ -36,6 +36,7 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
+	AuthToken func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -244,6 +245,8 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "../../schemas/directive_schema.graphqls", Input: `
+directive @authToken on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../schemas/master_schema.graphqls", Input: `scalar Int64
 scalar Int8
 scalar Time

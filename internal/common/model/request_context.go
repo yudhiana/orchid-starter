@@ -15,6 +15,9 @@ type RequestContext struct {
 	CompanyID    uint64
 	RequestID    string
 	AppRequestID string
+	TokenState   string
+	ThirdParty   string
+	Partner      string
 }
 
 // WithRequestContext adds RequestContext to the given context

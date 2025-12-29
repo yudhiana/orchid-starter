@@ -7,6 +7,9 @@ const (
 	HeaderAppOrigin    string = "Dmp-Origin"
 	HeaderUserID       string = "Dmp-User-Id"
 	HeaderCompanyID    string = "Dmp-User-Company-Id"
+	HeaderTokenState   string = "Dmp-Token-State"
+	HeaderThirdParty   string = "Dmp-Thirdparty"
+	HeaderPartner      string = "Dmp-Partner"
 	HeaderAppRequestID string = "App-Request-Id"
 	HeaderRequestID    string = "X-Request-Id"
 
