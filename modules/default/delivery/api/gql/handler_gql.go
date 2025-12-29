@@ -1,6 +1,7 @@
 package gqlHandler
 
 import (
+	"orchid-starter/gql/graph/directive"
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/resolvers"
 	"orchid-starter/http"
@@ -48,6 +49,9 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 	conf := generated.Config{
 		Resolvers: &resolvers.Resolver{
 			DI: base.di,
+		},
+		Directives: generated.DirectiveRoot{
+			AuthToken: directive.AuthToken,
 		},
 	}
 
