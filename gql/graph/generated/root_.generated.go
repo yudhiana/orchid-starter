@@ -39,6 +39,15 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	Pagination struct {
+		HasNext     func(childComplexity int) int
+		HasPrevious func(childComplexity int) int
+		Page        func(childComplexity int) int
+		PerPage     func(childComplexity int) int
+		TotalItems  func(childComplexity int) int
+		TotalPages  func(childComplexity int) int
+	}
+
 	Query struct {
 		Welcome            func(childComplexity int) int
 		__resolve__service func(childComplexity int) int
@@ -71,6 +80,48 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 	ec := executionContext{nil, e, 0, 0, nil}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "Pagination.hasNext":
+		if e.complexity.Pagination.HasNext == nil {
+			break
+		}
+
+		return e.complexity.Pagination.HasNext(childComplexity), true
+
+	case "Pagination.hasPrevious":
+		if e.complexity.Pagination.HasPrevious == nil {
+			break
+		}
+
+		return e.complexity.Pagination.HasPrevious(childComplexity), true
+
+	case "Pagination.page":
+		if e.complexity.Pagination.Page == nil {
+			break
+		}
+
+		return e.complexity.Pagination.Page(childComplexity), true
+
+	case "Pagination.perPage":
+		if e.complexity.Pagination.PerPage == nil {
+			break
+		}
+
+		return e.complexity.Pagination.PerPage(childComplexity), true
+
+	case "Pagination.totalItems":
+		if e.complexity.Pagination.TotalItems == nil {
+			break
+		}
+
+		return e.complexity.Pagination.TotalItems(childComplexity), true
+
+	case "Pagination.totalPages":
+		if e.complexity.Pagination.TotalPages == nil {
+			break
+		}
+
+		return e.complexity.Pagination.TotalPages(childComplexity), true
 
 	case "Query.welcome":
 		if e.complexity.Query.Welcome == nil {
@@ -107,7 +158,11 @@ func (e *executableSchema) Complexity(ctx context.Context, typeName, field strin
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	opCtx := graphql.GetOperationContext(ctx)
 	ec := executionContext{opCtx, e, 0, 0, make(chan graphql.DeferredResult)}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputExtraParams,
+		ec.unmarshalInputFilter,
+		ec.unmarshalInputQueryOption,
+	)
 	first := true
 
 	switch opCtx.Operation.Operation {
@@ -189,12 +244,47 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../../schemas/query_schema.graphqls", Input: `extend type Query {
-    welcome: ResponseWelcome!
+	{Name: "../../schemas/master_schema.graphqls", Input: `scalar Int64
+scalar Int8
+scalar Time
+scalar Any
+scalar Map
+
+
+input QueryOption {
+	condition: String
+	page: Int
+	limit: Int	
+	order: String
+	filter: [Filter]
+	extraParams : [ExtraParams]
+}
+
+input Filter {
+	key: String
+	value: String
+}
+
+input ExtraParams {
+	key: String
+	value: Any
+}
+
+type Pagination {
+	page: Int!
+	totalPages: Int!
+	totalItems: Int!
+	perPage: Int!
+	hasNext: Boolean!
+	hasPrevious: Boolean!
 }`, BuiltIn: false},
-	{Name: "../../schemas/welcome.schema.graphqls", Input: `
+	{Name: "../../schemas/welcome_schema.graphqls", Input: `
 type ResponseWelcome {
     message: String!
+}
+
+extend type Query {
+    welcome: ResponseWelcome!
 }`, BuiltIn: false},
 	{Name: "../../../federation/directives.graphql", Input: `
 	directive @authenticated on FIELD_DEFINITION | OBJECT | INTERFACE | SCALAR | ENUM

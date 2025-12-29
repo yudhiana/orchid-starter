@@ -1,3 +1,8 @@
+
+type ResponseWelcome {
+    message: String!
+}
+
 extend type Query {
     welcome: ResponseWelcome!
 }

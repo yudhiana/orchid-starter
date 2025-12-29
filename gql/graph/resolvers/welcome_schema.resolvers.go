@@ -7,7 +7,6 @@ package resolvers
 
 import (
 	"context"
-
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/model"
 	"orchid-starter/internal/common"

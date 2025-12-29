@@ -4,6 +4,7 @@ package generated
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"orchid-starter/gql/graph/model"
 	"strconv"
@@ -216,6 +217,35 @@ func (ec *executionContext) fieldContext_Query___schema(_ context.Context, field
 	return fc, nil
 }
 
+func (ec *executionContext) _ResponseWelcome_message(ctx context.Context, field graphql.CollectedField, obj *model.ResponseWelcome) (ret graphql.Marshaler) {
+	return graphql.ResolveField(
+		ctx,
+		ec.OperationContext,
+		field,
+		ec.fieldContext_ResponseWelcome_message,
+		func(ctx context.Context) (any, error) {
+			return obj.Message, nil
+		},
+		nil,
+		ec.marshalNString2string,
+		true,
+		true,
+	)
+}
+
+func (ec *executionContext) fieldContext_ResponseWelcome_message(_ context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "ResponseWelcome",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 // endregion **************************** field.gotpl *****************************
 
 // region    **************************** input.gotpl *****************************
@@ -322,8 +352,61 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 	return out
 }
 
+var responseWelcomeImplementors = []string{"ResponseWelcome"}
+
+func (ec *executionContext) _ResponseWelcome(ctx context.Context, sel ast.SelectionSet, obj *model.ResponseWelcome) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, responseWelcomeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	deferred := make(map[string]*graphql.FieldSet)
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ResponseWelcome")
+		case "message":
+			out.Values[i] = ec._ResponseWelcome_message(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				out.Invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch(ctx)
+	if out.Invalids > 0 {
+		return graphql.Null
+	}
+
+	atomic.AddInt32(&ec.deferred, int32(len(deferred)))
+
+	for label, dfs := range deferred {
+		ec.processDeferredGroup(graphql.DeferredGroup{
+			Label:    label,
+			Path:     graphql.GetPath(ctx),
+			FieldSet: dfs,
+			Context:  ctx,
+		})
+	}
+
+	return out
+}
+
 // endregion **************************** object.gotpl ****************************
 
 // region    ***************************** type.gotpl *****************************
+
+func (ec *executionContext) marshalNResponseWelcome2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐResponseWelcome(ctx context.Context, sel ast.SelectionSet, v model.ResponseWelcome) graphql.Marshaler {
+	return ec._ResponseWelcome(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNResponseWelcome2ᚖorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐResponseWelcome(ctx context.Context, sel ast.SelectionSet, v *model.ResponseWelcome) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			graphql.AddErrorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._ResponseWelcome(ctx, sel, v)
+}
 
 // endregion ***************************** type.gotpl *****************************

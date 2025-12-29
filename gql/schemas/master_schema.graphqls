@@ -1,0 +1,34 @@
+scalar Int64
+scalar Int8
+scalar Time
+scalar Any
+scalar Map
+
+
+input QueryOption {
+	condition: String
+	page: Int
+	limit: Int	
+	order: String
+	filter: [Filter]
+	extraParams : [ExtraParams]
+}
+
+input Filter {
+	key: String
+	value: String
+}
+
+input ExtraParams {
+	key: String
+	value: Any
+}
+
+type Pagination {
+	page: Int!
+	totalPages: Int!
+	totalItems: Int!
+	perPage: Int!
+	hasNext: Boolean!
+	hasPrevious: Boolean!
+}

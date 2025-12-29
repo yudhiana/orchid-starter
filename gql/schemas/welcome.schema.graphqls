@@ -1,4 +1,0 @@
-
-type ResponseWelcome {
-    message: String!
-}
