@@ -1,6 +1,7 @@
 package sentry
 
 import (
+	"context"
 	"net/http"
 	"os"
 	"reflect"
@@ -63,6 +64,16 @@ func SentryLogger(err error, args ...any) {
 				scope.SetRequest(v.Request())
 			case *http.Request:
 				scope.SetRequest(v)
+			case context.Context:
+				if requestID := common.GetRequestIDFromContext(v); requestID != "" {
+					scope.SetContext("app_context", map[string]any{
+						"request_id":     requestID,
+						"app_request_id": common.GetAppRequestIDFromContext(v),
+						"app_origin":     common.GetAppOriginFromContext(v),
+						"user_id":        common.GetUserIDFromContext(v),
+						"company_id":     common.GetCompanyIDFromContext(v),
+					})
+				}
 			default:
 				switch reflect.TypeOf(arg).Kind() {
 				case reflect.Struct:

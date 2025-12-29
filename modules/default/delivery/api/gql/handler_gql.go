@@ -5,6 +5,7 @@ import (
 	"orchid-starter/gql/graph/resolvers"
 	"orchid-starter/http"
 	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/common"
 	v2 "orchid-starter/modules/default/delivery/api/rest/v2"
 	"orchid-starter/modules/default/repository"
 	"orchid-starter/modules/default/usecase"
@@ -52,7 +53,8 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 
 	serverGraphql := handler.NewDefaultServer(generated.NewExecutableSchema(conf))
 	return func(ctx iris.Context) {
-		serverGraphql.ServeHTTP(ctx.ResponseWriter(), ctx.Request())
+		baseContext := ctx.Request().Context()
+		serverGraphql.ServeHTTP(ctx.ResponseWriter(), ctx.Request().WithContext(common.SetRequestContext(baseContext, ctx)))
 	}
 }
 

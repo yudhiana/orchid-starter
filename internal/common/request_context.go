@@ -83,3 +83,10 @@ func GetRequestIDFromContext(ctx context.Context) string {
 	}
 	return ""
 }
+
+func GetAppRequestIDFromContext(ctx context.Context) string {
+	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
+		return reqCtx.AppRequestID
+	}
+	return ""
+}
