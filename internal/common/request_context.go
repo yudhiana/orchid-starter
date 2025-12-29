@@ -24,15 +24,16 @@ func ExtractRequestContext(irisCtx iris.Context) *modelCommon.RequestContext {
 	}
 
 	return &modelCommon.RequestContext{
-		AppOrigin:    irisCtx.GetHeader(constants.HeaderAppOrigin),
-		AppToken:     authHeader,
-		UserID:       userID,
-		CompanyID:    companyID,
-		RequestID:    irisCtx.GetHeader(constants.HeaderRequestID),
-		AppRequestID: irisCtx.GetHeader(constants.HeaderAppRequestID),
-		TokenState:   irisCtx.GetHeader(constants.HeaderTokenState),
-		ThirdParty:   irisCtx.GetHeader(constants.HeaderThirdParty),
-		Partner:      irisCtx.GetHeader(constants.HeaderPartner),
+		AppOrigin:       irisCtx.GetHeader(constants.HeaderAppOrigin),
+		AppToken:        authHeader,
+		UserID:          userID,
+		CompanyID:       companyID,
+		RequestID:       irisCtx.GetHeader(constants.HeaderRequestID),
+		AppRequestID:    irisCtx.GetHeader(constants.HeaderAppRequestID),
+		TokenState:      irisCtx.GetHeader(constants.HeaderTokenState),
+		TokenIdentifier: irisCtx.GetHeader(constants.HeaderTokenIdentifier),
+		ThirdParty:      irisCtx.GetHeader(constants.HeaderThirdParty),
+		Partner:         irisCtx.GetHeader(constants.HeaderPartner),
 	}
 }
 
@@ -114,6 +115,14 @@ func GetThirdPartyFromContext(ctx context.Context) string {
 func GetPartnerFromContext(ctx context.Context) string {
 	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
 		return reqCtx.Partner
+	}
+	return ""
+}
+
+// GetTokenIdentifierFromContext extracts token identifier from context
+func GetTokenIdentifierFromContext(ctx context.Context) string {
+	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
+		return reqCtx.TokenIdentifier
 	}
 	return ""
 }

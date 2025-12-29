@@ -12,11 +12,12 @@ import (
 func AuthToken(ctx context.Context, obj any, next graphql.Resolver) (res any, err error) {
 
 	var (
-		appToken   = common.GetAppTokenFromContext(ctx)
-		appOrigin  = common.GetAppOriginFromContext(ctx)
-		tokenState = common.GetTokenStateFromContext(ctx)
-		userID     = common.GetUserIDFromContext(ctx)
-		companyID  = common.GetCompanyIDFromContext(ctx)
+		appToken        = common.GetAppTokenFromContext(ctx)
+		appOrigin       = common.GetAppOriginFromContext(ctx)
+		tokenState      = common.GetTokenStateFromContext(ctx)
+		tokenIdentifier = common.GetTokenIdentifierFromContext(ctx)
+		userID          = common.GetUserIDFromContext(ctx)
+		companyID       = common.GetCompanyIDFromContext(ctx)
 	)
 
 	if isThirdParty := common.GetThirdPartyFromContext(ctx); isThirdParty == "1" {
@@ -27,9 +28,9 @@ func AuthToken(ctx context.Context, obj any, next graphql.Resolver) (res any, er
 		}
 	}
 
-	if appOrigin == "" || appToken == "" {
+	if appOrigin == "" || appToken == "" || tokenIdentifier == "" {
 		return nil, &gqlError.Error{
-			Message: "app origin Or app token header is empty",
+			Message: "app origin Or app token Or token identifier header is empty",
 			Extensions: map[string]interface{}{
 				"code": "INVALID_TOKEN",
 			},

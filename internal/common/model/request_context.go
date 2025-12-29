@@ -9,15 +9,16 @@ import (
 
 // RequestContext contains common request metadata extracted from headers
 type RequestContext struct {
-	AppOrigin    string
-	AppToken     string
-	UserID       uint64
-	CompanyID    uint64
-	RequestID    string
-	AppRequestID string
-	TokenState   string
-	ThirdParty   string
-	Partner      string
+	AppOrigin       string
+	AppToken        string
+	UserID          uint64
+	CompanyID       uint64
+	RequestID       string
+	AppRequestID    string
+	TokenState      string
+	TokenIdentifier string
+	ThirdParty      string
+	Partner         string
 }
 
 // WithRequestContext adds RequestContext to the given context
