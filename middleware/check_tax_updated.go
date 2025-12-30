@@ -7,22 +7,25 @@ import (
 	"strconv"
 
 	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/x/errors"
 	"github.com/mataharibiz/sange/v2"
 )
 
-func CheckTaxUpdated(irisCtx iris.Context) {
+func CheckTaxUpdated(irisCtx iris.Context) *sange.Error {
 	client := clients.NewClient()
 	internalClient := client.InternalClient
 	ctx := common.SetRequestContext(irisCtx.Request().Context(), irisCtx)
-	appOrigin := common.GetAppOriginFromContext(ctx)
-	if constants.IsSeller(appOrigin) {
-		companyId := common.GetCompanyIDFromContext(ctx)
-		selected := `items { updateProductTaxStatus type }`
 
-		result, errGet := internalClient.GetCompanyGQLDetail(ctx, companyId, selected)
+	var (
+		companyID = common.GetCompanyIDFromContext(ctx)
+		appOrigin = common.GetAppOriginFromContext(ctx)
+	)
+
+	if constants.IsSeller(appOrigin) {
+		selected := `items { updateProductTaxStatus type }`
+		result, errGet := internalClient.GetCompanyGQLDetail(ctx, companyID, selected)
 		if errGet != nil {
-			sange.NewResponse(irisCtx, iris.StatusInternalServerError, errGet.Error())
-			return
+			return sange.SetError(sange.Forbidden, errGet, "get gql company detail")
 		}
 
 		whiteListCompanyType := map[string]bool{
@@ -42,11 +45,10 @@ func CheckTaxUpdated(irisCtx iris.Context) {
 		}
 
 		if whiteListCompanyType[strconv.Itoa(int(result.Data.CompanyDetail.Items.Type))] {
-			if message, ok := whiteListProductTaxStatus[strconv.Itoa(int(result.Data.CompanyDetail.Items.UpdateProductTaxStatus))]; ok {
-				sange.NewResponse(irisCtx, iris.StatusBadRequest, message)
-				return
+			if _, ok := whiteListProductTaxStatus[strconv.Itoa(int(result.Data.CompanyDetail.Items.UpdateProductTaxStatus))]; ok {
+				return sange.SetError(sange.Forbidden, errors.New("company still updated tax"), "company still updated tax")
 			}
 		}
 	}
-	irisCtx.Next()
+	return nil
 }
