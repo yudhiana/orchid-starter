@@ -51,6 +51,16 @@ func (ec *executionContext) marshalNOrigin2orchidᚑstarterᚋgqlᚋgraphᚋmode
 	return v
 }
 
+func (ec *executionContext) unmarshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRoles(ctx context.Context, v any) (model.SellerRoles, error) {
+	var res model.SellerRoles
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRoles(ctx context.Context, sel ast.SelectionSet, v model.SellerRoles) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalOOrigin2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐOriginᚄ(ctx context.Context, v any) ([]model.Origin, error) {
 	if v == nil {
 		return nil, nil
@@ -97,6 +107,71 @@ func (ec *executionContext) marshalOOrigin2ᚕorchidᚑstarterᚋgqlᚋgraphᚋm
 				defer wg.Done()
 			}
 			ret[i] = ec.marshalNOrigin2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐOrigin(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOSellerRoles2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRolesᚄ(ctx context.Context, v any) ([]model.SellerRoles, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]model.SellerRoles, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRoles(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOSellerRoles2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRolesᚄ(ctx context.Context, sel ast.SelectionSet, v []model.SellerRoles) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRoles(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)

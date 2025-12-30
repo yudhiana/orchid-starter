@@ -23,7 +23,7 @@ func (d *Directive) AllowedOrigin(ctx context.Context, obj any, next graphql.Res
 	}
 
 	exist := slices.ContainsFunc(origin, func(item model.Origin) bool {
-		return item.String() == strings.ToUpper(appOrigin)
+		return strings.EqualFold(item.String(), appOrigin)
 	})
 	if !exist {
 		return nil, &gqlError.Error{

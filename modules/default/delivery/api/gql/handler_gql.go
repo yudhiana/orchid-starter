@@ -52,8 +52,9 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 			DI: base.di,
 		},
 		Directives: generated.DirectiveRoot{
-			AuthToken: directiveHandler.AuthToken,
-			AllowedOrigin: directiveHandler.AllowedOrigin,
+			AuthToken:      directiveHandler.AuthToken,
+			AllowedOrigin:  directiveHandler.AllowedOrigin,
+			HasSellerRoles: directiveHandler.HasSellerRoles,
 		},
 	}
 

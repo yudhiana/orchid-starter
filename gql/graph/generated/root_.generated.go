@@ -37,8 +37,9 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	AllowedOrigin func(ctx context.Context, obj any, next graphql.Resolver, origin []model.Origin) (res any, err error)
-	AuthToken     func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	AllowedOrigin  func(ctx context.Context, obj any, next graphql.Resolver, origin []model.Origin) (res any, err error)
+	AuthToken      func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	HasSellerRoles func(ctx context.Context, obj any, next graphql.Resolver, roles []model.SellerRoles) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -250,7 +251,9 @@ var sources = []*ast.Source{
 	{Name: "../../schemas/directive_schema.graphqls", Input: `
 directive @authToken on FIELD_DEFINITION
 
-directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION`, BuiltIn: false},
+directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION
+
+directive @hasSellerRoles(roles: [SellerRoles!]) on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../schemas/enum.graphqls", Input: `enum SellerRoles{
     ADMIN
     SUPERADMIN
