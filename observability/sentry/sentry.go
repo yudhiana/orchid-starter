@@ -19,8 +19,8 @@ import (
 
 func InitSentry() {
 	// Init sentry DSN if sentry is enabled
-	if strings.ToUpper(os.Getenv("SENTRY_ENABLE_orchid-starter")) == "TRUE" {
-		dsn := os.Getenv("SENTRY_DSN_orchid-starter")
+	if strings.ToUpper(os.Getenv("SENTRY_ENABLE_ORCHID-STARTER")) == "TRUE" {
+		dsn := os.Getenv("SENTRY_DSN_ORCHID-STARTER")
 		appEnv := os.Getenv("APP_ENV")
 
 		// Sentry Init V2
