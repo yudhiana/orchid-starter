@@ -16,6 +16,65 @@ type ResponseWelcome struct {
 	Message string `json:"message"`
 }
 
+type BuyerRoles string
+
+const (
+	BuyerRolesAdmin   BuyerRoles = "ADMIN"
+	BuyerRolesFinance BuyerRoles = "FINANCE"
+	BuyerRolesManager BuyerRoles = "MANAGER"
+	BuyerRolesStaff   BuyerRoles = "STAFF"
+)
+
+var AllBuyerRoles = []BuyerRoles{
+	BuyerRolesAdmin,
+	BuyerRolesFinance,
+	BuyerRolesManager,
+	BuyerRolesStaff,
+}
+
+func (e BuyerRoles) IsValid() bool {
+	switch e {
+	case BuyerRolesAdmin, BuyerRolesFinance, BuyerRolesManager, BuyerRolesStaff:
+		return true
+	}
+	return false
+}
+
+func (e BuyerRoles) String() string {
+	return string(e)
+}
+
+func (e *BuyerRoles) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = BuyerRoles(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid BuyerRoles", str)
+	}
+	return nil
+}
+
+func (e BuyerRoles) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *BuyerRoles) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e BuyerRoles) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
 type CompanyType string
 
 const (

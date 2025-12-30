@@ -41,6 +41,16 @@ import (
 
 // region    ***************************** type.gotpl *****************************
 
+func (ec *executionContext) unmarshalNBuyerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRoles(ctx context.Context, v any) (model.BuyerRoles, error) {
+	var res model.BuyerRoles
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNBuyerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRoles(ctx context.Context, sel ast.SelectionSet, v model.BuyerRoles) graphql.Marshaler {
+	return v
+}
+
 func (ec *executionContext) unmarshalNOrigin2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐOrigin(ctx context.Context, v any) (model.Origin, error) {
 	var res model.Origin
 	err := res.UnmarshalGQL(v)
@@ -59,6 +69,71 @@ func (ec *executionContext) unmarshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraph
 
 func (ec *executionContext) marshalNSellerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐSellerRoles(ctx context.Context, sel ast.SelectionSet, v model.SellerRoles) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalOBuyerRoles2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRolesᚄ(ctx context.Context, v any) ([]model.BuyerRoles, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []any
+	vSlice = graphql.CoerceList(v)
+	var err error
+	res := make([]model.BuyerRoles, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNBuyerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRoles(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOBuyerRoles2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRolesᚄ(ctx context.Context, sel ast.SelectionSet, v []model.BuyerRoles) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNBuyerRoles2orchidᚑstarterᚋgqlᚋgraphᚋmodelᚐBuyerRoles(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalOOrigin2ᚕorchidᚑstarterᚋgqlᚋgraphᚋmodelᚐOriginᚄ(ctx context.Context, v any) ([]model.Origin, error) {

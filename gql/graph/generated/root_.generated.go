@@ -39,6 +39,7 @@ type ResolverRoot interface {
 type DirectiveRoot struct {
 	AllowedOrigin  func(ctx context.Context, obj any, next graphql.Resolver, origin []model.Origin) (res any, err error)
 	AuthToken      func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	HasBuyerRoles  func(ctx context.Context, obj any, next graphql.Resolver, roles []model.BuyerRoles) (res any, err error)
 	HasSellerRoles func(ctx context.Context, obj any, next graphql.Resolver, roles []model.SellerRoles) (res any, err error)
 }
 
@@ -253,10 +254,19 @@ directive @authToken on FIELD_DEFINITION
 
 directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION
 
-directive @hasSellerRoles(roles: [SellerRoles!]) on FIELD_DEFINITION`, BuiltIn: false},
+directive @hasSellerRoles(roles: [SellerRoles!]) on FIELD_DEFINITION
+
+directive @hasBuyerRoles(roles: [BuyerRoles!]) on FIELD_DEFINITION`, BuiltIn: false},
 	{Name: "../../schemas/enum.graphqls", Input: `enum SellerRoles{
     ADMIN
     SUPERADMIN
+    STAFF
+}
+
+enum BuyerRoles{
+    ADMIN
+    FINANCE
+    MANAGER
     STAFF
 }
 

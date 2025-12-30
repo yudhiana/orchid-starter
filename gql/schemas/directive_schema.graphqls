@@ -4,3 +4,5 @@ directive @authToken on FIELD_DEFINITION
 directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION
 
 directive @hasSellerRoles(roles: [SellerRoles!]) on FIELD_DEFINITION
+
+directive @hasBuyerRoles(roles: [BuyerRoles!]) on FIELD_DEFINITION

@@ -4,6 +4,13 @@ enum SellerRoles{
     STAFF
 }
 
+enum BuyerRoles{
+    ADMIN
+    FINANCE
+    MANAGER
+    STAFF
+}
+
 enum Origin {
     VLADMIR
     VOODOO
