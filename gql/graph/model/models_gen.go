@@ -2,9 +2,187 @@
 
 package model
 
+import (
+	"bytes"
+	"fmt"
+	"io"
+	"strconv"
+)
+
 type Query struct {
 }
 
 type ResponseWelcome struct {
 	Message string `json:"message"`
+}
+
+type CompanyType string
+
+const (
+	CompanyTypeBuyer  CompanyType = "BUYER"
+	CompanyTypeSeller CompanyType = "SELLER"
+)
+
+var AllCompanyType = []CompanyType{
+	CompanyTypeBuyer,
+	CompanyTypeSeller,
+}
+
+func (e CompanyType) IsValid() bool {
+	switch e {
+	case CompanyTypeBuyer, CompanyTypeSeller:
+		return true
+	}
+	return false
+}
+
+func (e CompanyType) String() string {
+	return string(e)
+}
+
+func (e *CompanyType) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = CompanyType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid CompanyType", str)
+	}
+	return nil
+}
+
+func (e CompanyType) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *CompanyType) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e CompanyType) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type Origin string
+
+const (
+	OriginVladmir  Origin = "VLADMIR"
+	OriginVoodoo   Origin = "VOODOO"
+	OriginVembrace Origin = "VEMBRACE"
+	OriginTrident  Origin = "TRIDENT"
+)
+
+var AllOrigin = []Origin{
+	OriginVladmir,
+	OriginVoodoo,
+	OriginVembrace,
+	OriginTrident,
+}
+
+func (e Origin) IsValid() bool {
+	switch e {
+	case OriginVladmir, OriginVoodoo, OriginVembrace, OriginTrident:
+		return true
+	}
+	return false
+}
+
+func (e Origin) String() string {
+	return string(e)
+}
+
+func (e *Origin) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Origin(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Origin", str)
+	}
+	return nil
+}
+
+func (e Origin) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *Origin) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e Origin) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
+}
+
+type SellerRoles string
+
+const (
+	SellerRolesAdmin      SellerRoles = "ADMIN"
+	SellerRolesSuperadmin SellerRoles = "SUPERADMIN"
+	SellerRolesStaff      SellerRoles = "STAFF"
+)
+
+var AllSellerRoles = []SellerRoles{
+	SellerRolesAdmin,
+	SellerRolesSuperadmin,
+	SellerRolesStaff,
+}
+
+func (e SellerRoles) IsValid() bool {
+	switch e {
+	case SellerRolesAdmin, SellerRolesSuperadmin, SellerRolesStaff:
+		return true
+	}
+	return false
+}
+
+func (e SellerRoles) String() string {
+	return string(e)
+}
+
+func (e *SellerRoles) UnmarshalGQL(v any) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = SellerRoles(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid SellerRoles", str)
+	}
+	return nil
+}
+
+func (e SellerRoles) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+func (e *SellerRoles) UnmarshalJSON(b []byte) error {
+	s, err := strconv.Unquote(string(b))
+	if err != nil {
+		return err
+	}
+	return e.UnmarshalGQL(s)
+}
+
+func (e SellerRoles) MarshalJSON() ([]byte, error) {
+	var buf bytes.Buffer
+	e.MarshalGQL(&buf)
+	return buf.Bytes(), nil
 }

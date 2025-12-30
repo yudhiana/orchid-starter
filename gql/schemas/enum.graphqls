@@ -1,0 +1,17 @@
+enum SellerRoles{
+    ADMIN
+    SUPERADMIN
+    STAFF
+}
+
+enum Origin {
+    VLADMIR
+    VOODOO
+    VEMBRACE
+    TRIDENT
+}
+
+enum CompanyType {
+    BUYER
+    SELLER
+}

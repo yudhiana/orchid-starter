@@ -53,6 +53,7 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 		},
 		Directives: generated.DirectiveRoot{
 			AuthToken: directiveHandler.AuthToken,
+			AllowedOrigin: directiveHandler.AllowedOrigin,
 		},
 	}
 

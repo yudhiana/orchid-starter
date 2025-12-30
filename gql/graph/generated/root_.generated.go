@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"orchid-starter/gql/graph/model"
 	"sync/atomic"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -36,7 +37,8 @@ type ResolverRoot interface {
 }
 
 type DirectiveRoot struct {
-	AuthToken func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
+	AllowedOrigin func(ctx context.Context, obj any, next graphql.Resolver, origin []model.Origin) (res any, err error)
+	AuthToken     func(ctx context.Context, obj any, next graphql.Resolver) (res any, err error)
 }
 
 type ComplexityRoot struct {
@@ -246,7 +248,27 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 
 var sources = []*ast.Source{
 	{Name: "../../schemas/directive_schema.graphqls", Input: `
-directive @authToken on FIELD_DEFINITION`, BuiltIn: false},
+directive @authToken on FIELD_DEFINITION
+
+directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION`, BuiltIn: false},
+	{Name: "../../schemas/enum.graphqls", Input: `enum SellerRoles{
+    ADMIN
+    SUPERADMIN
+    STAFF
+}
+
+enum Origin {
+    VLADMIR
+    VOODOO
+    VEMBRACE
+    TRIDENT
+}
+
+enum CompanyType {
+    BUYER
+    SELLER
+}
+`, BuiltIn: false},
 	{Name: "../../schemas/master_schema.graphqls", Input: `scalar Int64
 scalar Int8
 scalar Time

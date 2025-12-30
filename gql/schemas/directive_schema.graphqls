@@ -1,2 +1,4 @@
 
 directive @authToken on FIELD_DEFINITION
+
+directive @allowedOrigin(origin: [Origin!]) on FIELD_DEFINITION
