@@ -35,6 +35,11 @@ func (role *Roles) SetSeller(roleName ...string) *Roles {
 func (role *Roles) Validate(irisCtx iris.Context) *sange.Error {
 	ctx := common.SetRequestContext(irisCtx.Request().Context(), irisCtx)
 
+	// Bypass if appOrigin is non-user including (system, tarrasque, worker)
+	if constants.IsNonUser(common.GetAppOriginFromContext(ctx)) {
+		return nil
+	}
+
 	if exist := role.checkCacheRoles(ctx); !exist {
 		return sange.SetError(sange.Forbidden, nil, "user role not allowed")
 	}
