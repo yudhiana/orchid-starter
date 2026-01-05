@@ -3,12 +3,6 @@ set -a
 source .env
 set +a
 
-
-# Ambil nama module dari argumen atau gunakan default
-MODULE_NAME="${1:-default}"
-MODULES_ROOT="./modules/${MODULE_NAME}"
-
-
 normalize_module_key() {
   echo "$1" | tr '-' '_'
 }
@@ -16,7 +10,6 @@ normalize_module_key() {
 to_snake_case() {
   echo "$1" | tr '-' '_'
 }
-
 
 to_camel_case() {
   local s
@@ -33,6 +26,7 @@ to_lower_camel_case() {
 MODULE_SLUG="${1:-default}"    
 MODULE_KEY="$(normalize_module_key "$MODULE_SLUG")"
 MODULES_ROOT="./modules/${MODULE_SLUG}"
+FILE_NAME="$(to_snake_case "$MODULE_SLUG")"
 
 generate_file_content() {
   local path="$1"
@@ -51,8 +45,12 @@ generate_file_content() {
   case "$path" in
     "repository/repository_interface.go")
       cat <<EOF
-type ${CamelModule}RepositoryInterface interface {
+import (
+	"gorm.io/gorm"
+)
 
+type ${CamelModule}RepositoryInterface interface {
+	WithTx(tx *gorm.DB) ${CamelModule}RepositoryInterface
 }
 EOF
       ;;
@@ -65,7 +63,7 @@ type ${CamelModule}UsecaseInterface interface {
 EOF
       ;;
 
-    "usecase/${MODULE_SLUG}_usecase.go")
+    "usecase/${FILE_NAME}_usecase.go")
       cat <<EOF
 import (
 	"${APP_NAME}/internal/clients"
@@ -93,7 +91,7 @@ func New${CamelModule}Usecase(db *gorm.DB, r repository.${CamelModule}Repository
 EOF
       ;;
 
-    "repository/${MODULE_SLUG}_repository.go")
+    "repository/${FILE_NAME}_repository.go")
       cat <<EOF
 import (
     "github.com/mataharibiz/ward/logging"
@@ -109,6 +107,13 @@ func New${CamelModule}Repository(db *gorm.DB) ${CamelModule}RepositoryInterface 
 	return &${lowerCamelModule}Repository{
 		db:  db,
 		log: logging.NewLogger(),
+	}
+}
+
+func (r *${lowerCamelModule}Repository) WithTx(tx *gorm.DB) ${CamelModule}RepositoryInterface {
+	return &${lowerCamelModule}Repository{
+		db:  tx,
+		log: r.log,
 	}
 }
 EOF
@@ -142,15 +147,15 @@ paths=(
   "delivery/api/rest/handler.go"
   "delivery/api/rest/v2/handler_v2.go"
   "delivery/event/event.go"
-  "repository/${MODULE_SLUG}_repository.go"
+  "repository/${FILE_NAME}_repository.go"
   "repository/repository_interface.go"
-  "usecase/${MODULE_SLUG}_usecase.go"
+  "usecase/${FILE_NAME}_usecase.go"
   "usecase/usecase_interface.go"
-  "model/db/${MODULE_NAME}.go"
-  "model/request/request_${MODULE_NAME}.go"
-  "model/response/response_${MODULE_NAME}.go"
-  "model/repository/${MODULE_NAME}_repo_input.go"
-  "model/usecase/${MODULE_NAME}_usecase_input.go"
+  "model/db/${FILE_NAME}.go"
+  "model/request/request_${FILE_NAME}.go"
+  "model/response/response_${FILE_NAME}.go"
+  "model/repository/${FILE_NAME}_repo_input.go"
+  "model/usecase/${FILE_NAME}_usecase_input.go"
 )
 
 # Loop buat direktori dan file
@@ -160,16 +165,15 @@ for path in "${paths[@]}"; do
   package_name=$(get_package_name "$path")
 
   mkdir -p "$dir_path"
-
   if [ ! -f "$file_path" ]; then
-    generate_file_content "$path" "$package_name" "$MODULE_NAME" > "$file_path"
+    generate_file_content "$path" "$package_name" "$MODULE_SLUG" > "$file_path"
     echo "Created: $file_path (package: $package_name)"
   else
     echo "Already exists: $file_path"
   fi
 done
 
-echo "✅ Module '${MODULE_NAME}' structure created at: $MODULES_ROOT"
+echo "✅ Module '${MODULE_SLUG}' structure created at: $MODULES_ROOT"
 
 
 
