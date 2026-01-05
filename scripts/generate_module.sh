@@ -3,9 +3,6 @@ set -a
 source .env
 set +a
 
-normalize_module_key() {
-  echo "$1" | tr '-' '_'
-}
 
 to_snake_case() {
   echo "$1" | tr '-' '_'
@@ -13,7 +10,7 @@ to_snake_case() {
 
 to_camel_case() {
   local s
-  s=$(normalize_module_key "$1")
+  s=$(to_snake_case "$1")
   echo "$s" | sed -r 's/(^|_)([a-z])/\U\2/g'
 }
 
@@ -24,7 +21,7 @@ to_lower_camel_case() {
 }
 
 MODULE_SLUG="${1:-default}"    
-MODULE_KEY="$(normalize_module_key "$MODULE_SLUG")"
+MODULE_KEY="$(to_snake_case "$MODULE_SLUG")"
 MODULES_ROOT="./modules/${MODULE_SLUG}"
 FILE_NAME="$(to_snake_case "$MODULE_SLUG")"
 
