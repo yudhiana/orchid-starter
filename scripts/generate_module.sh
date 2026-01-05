@@ -71,7 +71,7 @@ import (
 )
 
 type ${lowerCamelModule}Usecase struct {
-	db         *gorm.DB // use for transaction db .. NOTE : don't use for query!
+	db         *gorm.DB // use for transaction db only!
 	repository repository.${CamelModule}RepositoryInterface
 	client     *clients.Client
 	log        *logging.LogEntry
