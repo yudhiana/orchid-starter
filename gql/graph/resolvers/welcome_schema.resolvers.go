@@ -9,15 +9,12 @@ import (
 	"context"
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/model"
-	"orchid-starter/internal/common"
 	"orchid-starter/modules/default/repository"
 	"orchid-starter/modules/default/usecase"
 )
 
 // Welcome is the resolver for the welcome field.
 func (r *queryResolver) Welcome(ctx context.Context) (*model.ResponseWelcome, error) {
-	appOrigin := common.GetAppOriginFromContext(ctx)
-	r.DI.Log.Info("origin", "app-origin", appOrigin)
 
 	db := r.DI.GetMySQL()
 	requestClient := r.DI.GetClient()
