@@ -6,7 +6,7 @@ import (
 	"orchid-starter/internal/bootstrap"
 
 	"github.com/mataharibiz/sange/v2"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 // Company event type constants
@@ -16,7 +16,7 @@ const (
 
 type eventHandler struct {
 	di  *bootstrap.DirectInjection
-	log *logging.LogEntry
+	log *logos.LogEntry
 }
 
 func NewDefaultEventHandler(di *bootstrap.DirectInjection) *eventHandler {

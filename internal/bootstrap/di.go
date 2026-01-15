@@ -10,7 +10,7 @@ import (
 	"orchid-starter/internal/common"
 
 	"github.com/elastic/go-elasticsearch/v9"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 	"gorm.io/gorm"
 )
 
@@ -18,12 +18,12 @@ type DirectInjection struct {
 	MySQL  *gorm.DB
 	ES     *elasticsearch.Client
 	Client *clients.Client
-	Log    *logging.LogEntry
+	Log    *logos.LogEntry
 }
 
 // NewDirectInjection creates a new dependency injection container with proper error handling
 func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 	logger.Info("Initializing dependency injection container...")
 
 	var (
@@ -64,7 +64,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 		MySQL:  mysqlDB,
 		ES:     esClient,
 		Client: clients.NewClient(),
-		Log:    logging.NewLogger(),
+		Log:    logos.NewLogger(),
 	}
 
 	logger.Info("Dependency injection container initialized successfully")
@@ -73,7 +73,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 
 // testConnections verifies that all connections are working
 func testConnections(mysqlDB *gorm.DB, esClient *elasticsearch.Client) error {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 
 	// Test MySQL connection
 	if sqlDB, err := mysqlDB.DB(); err != nil {
@@ -93,7 +93,7 @@ func testConnections(mysqlDB *gorm.DB, esClient *elasticsearch.Client) error {
 
 // Close gracefully closes all connections
 func (di *DirectInjection) Close() error {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 	logger.Info("Closing dependency injection resources...")
 
 	var errors []error

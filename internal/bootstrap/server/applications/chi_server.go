@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 type chiApplication struct {
@@ -15,14 +15,13 @@ type chiApplication struct {
 var chiAppInstance *chiApplication
 var onceApp sync.Once
 
-// // GetIrisApplication get iris Application instance
 func GetChiApplication() *chi.Mux {
-	onceIrisApp.Do(func() {
-		log := logging.NewLogger()
+	onceApp.Do(func() {
+		log := logos.NewLogger()
 		log.Info("Initialize chi application instance...")
 
 		app := chi.NewRouter()
-		// app.Use(middleware.RequestID)
+		app.Use(middleware.RequestID)
 		app.Use(middleware.Logger)
 
 		chiAppInstance = &chiApplication{

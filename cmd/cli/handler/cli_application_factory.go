@@ -14,7 +14,7 @@ import (
 	"orchid-starter/internal/common"
 
 	"github.com/mataharibiz/sange/v2"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 	"github.com/urfave/cli"
 )
 
@@ -74,7 +74,7 @@ func CreateEventHandlerApplication(
 
 				// Wait for shutdown signal
 				<-sigs
-				logging.NewLogger().Info("Received shutdown signal. Completing pending tasks...")
+				logos.NewLogger().Info("Received shutdown signal. Completing pending tasks...")
 
 				// Step 1: Stop receiving new messages
 				cancel()
@@ -92,15 +92,15 @@ func CreateEventHandlerApplication(
 				timeout := common.GetIntEnv("GRACEFUL_SHUTDOWN_TIMEOUT", 10)
 				select {
 				case <-done:
-					logging.NewLogger().Info("All tasks completed successfully")
+					logos.NewLogger().Info("All tasks completed successfully")
 				case <-time.After(time.Duration(timeout) * time.Second):
-					logging.NewLogger().Info(fmt.Sprintf("Force shutdown timeout of %v elapsed, forcing exit", timeout))
+					logos.NewLogger().Info(fmt.Sprintf("Force shutdown timeout of %v elapsed, forcing exit", timeout))
 				}
 
 				// Step 3: cleanup
 				errClose := di.Close()
 				if errClose != nil {
-					logging.NewLogger().Error("Failed to close DI", "error", errClose)
+					logos.NewLogger().Error("Failed to close DI", "error", errClose)
 				}
 				return
 			},

@@ -13,7 +13,7 @@ import (
 
 	"github.com/elastic/elastic-transport-go/v8/elastictransport"
 	"github.com/elastic/go-elasticsearch/v9"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 type esUtil struct {
@@ -26,7 +26,7 @@ var esOnce sync.Once
 // NewESConnection initialize elasticsearch connection
 func NewESConnection(localConfig *config.LocalConfig) *elasticsearch.Client {
 	esOnce.Do(func() {
-		logging.NewLogger().Info("Initialize elasticsearch connection...")
+		logos.NewLogger().Info("Initialize elasticsearch connection...")
 		cfg := elasticsearch.Config{
 			Addresses: strings.Split(localConfig.EsConfig.ESAddresses, ","),
 			Transport: &http.Transport{
@@ -47,19 +47,19 @@ func NewESConnection(localConfig *config.LocalConfig) *elasticsearch.Client {
 			Logger: getLogger(localConfig.ElasticsearchDebug),
 		}
 
-		logging.NewLogger().Info("Connect to elasticsearch", "addresses", cfg.Addresses)
+		logos.NewLogger().Info("Connect to elasticsearch", "addresses", cfg.Addresses)
 		client, errConnect := elasticsearch.NewClient(cfg)
 		if errConnect != nil {
-			logging.NewLogger().Error("Failed to connect to elasticsearch", "error", errConnect)
+			logos.NewLogger().Error("Failed to connect to elasticsearch", "error", errConnect)
 			panic(errConnect)
 		}
 
 		// ping elasticsearch to check elasticsearch  established connection
 		if response, errPing := client.Ping(); errPing != nil {
-			logging.NewLogger().Error("Failed Ping to elasticsearch", "error", errPing)
+			logos.NewLogger().Error("Failed Ping to elasticsearch", "error", errPing)
 			panic(errPing)
 		} else {
-			logging.NewLogger().Info("Ping to elasticsearch", "status", response.Status())
+			logos.NewLogger().Info("Ping to elasticsearch", "status", response.Status())
 		}
 
 		esInstance = &esUtil{

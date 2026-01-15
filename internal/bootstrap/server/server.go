@@ -7,7 +7,7 @@ import (
 	"orchid-starter/internal/bootstrap/server/applications/handler"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 type Server struct {
@@ -56,7 +56,7 @@ func (s *Server) setupRoutes(container *bootstrap.Container) {
 func (s *Server) Run() error {
 	// Log version and server info
 	cfg := s.cfg
-	logging.NewLogger().Info("Version", "version", cfg.AppVersion, "host", cfg.AppHost, "port", cfg.AppPort)
+	logos.NewLogger().Info("Version", "version", cfg.AppVersion, "host", cfg.AppHost, "port", cfg.AppPort)
 
 	// Start server
 	address := cfg.AppHost + ":" + cfg.AppPort

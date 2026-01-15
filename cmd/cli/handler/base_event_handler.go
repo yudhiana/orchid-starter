@@ -12,7 +12,7 @@ import (
 	"orchid-starter/observability/sentry"
 
 	"github.com/mataharibiz/sange/v2"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 var ErrNoHandlerRegistered = errors.New("no handler registered event type")
@@ -20,7 +20,7 @@ var ErrNoHandlerRegistered = errors.New("no handler registered event type")
 // BaseEventHandler provides common functionality for all event handlers
 type BaseEventHandler struct {
 	di       *bootstrap.DirectInjection
-	log      *logging.LogEntry
+	log      *logos.LogEntry
 	handlers map[string]EventHandlerInterface
 	config   EventHandlerConfig
 }
