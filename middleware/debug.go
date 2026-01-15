@@ -8,9 +8,9 @@ import (
 	"orchid-starter/internal/common"
 
 	"github.com/kataras/iris/v12"
-	"github.com/mataharibiz/ward/logging"
 
 	jsonSanitizer "github.com/mataharibiz/ward/json_sanitizer"
+	"github.com/mataharibiz/ward/logging"
 )
 
 func Debug(ctx iris.Context) {

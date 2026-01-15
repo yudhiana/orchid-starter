@@ -6,12 +6,12 @@ import (
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap/server/applications"
 
-	"github.com/kataras/iris/v12"
+	"github.com/go-chi/chi/v5"
 	"github.com/mataharibiz/ward/logging"
 )
 
 type Container struct {
-	App *iris.Application
+	App *chi.Mux
 	Cfg *config.LocalConfig
 	DI  *DirectInjection
 	Log *logging.LogEntry
@@ -37,7 +37,7 @@ func NewContainer() (*Container, error) {
 	logger.Info("Dependencies initialized successfully")
 
 	// Initialize Iris application
-	app := applications.GetIrisApplication()
+	app := applications.GetChiApplication()
 	if app == nil {
 		return nil, fmt.Errorf("failed to initialize Iris application")
 	}
@@ -80,7 +80,7 @@ func (c *Container) GetConfig() *config.LocalConfig {
 }
 
 // GetApp returns the Iris application
-func (c *Container) GetApp() *iris.Application {
+func (c *Container) GetApp() *chi.Mux {
 	return c.App
 }
 

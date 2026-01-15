@@ -1,10 +1,8 @@
 package v2
 
 import (
+	"net/http"
 	"orchid-starter/modules/default/usecase"
-
-	"github.com/kataras/iris/v12"
-	"github.com/mataharibiz/sange/v2"
 )
 
 type defaultHandler struct {
@@ -17,7 +15,9 @@ func NewDefaultHandler(u usecase.DefaultUsecaseInterface) *defaultHandler {
 	}
 }
 
-func (base *defaultHandler) Welcome(irisCtx iris.Context) {
-	ctx := irisCtx.Request().Context()
-	sange.NewResponse(irisCtx, iris.StatusOK, base.usecase.WelcomeUsecase(ctx))
+func (base *defaultHandler) Welcome(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	welcome := base.usecase.WelcomeUsecase(ctx)
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(welcome))
 }
