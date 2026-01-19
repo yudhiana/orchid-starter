@@ -22,14 +22,6 @@ func NewDefaultHandler(app chi.Router, di *bootstrap.DirectInjection) {
 	defaultUseCase := usecase.NewDefaultUsecase(di.GetMySQL(), defaultRepository, client)
 	defaultV2 := v2.NewDefaultHandler(defaultUseCase)
 
-	/*
-		// this example is for versioning
-		v2 := versioning.NewGroup(app, ">=2.0.0")
-		v2.Get("/", defaultV2.Welcome)
-	*/
-
-	// app.Get("/metrics", iris.FromStd(promHttp.Handler()))
 	app.Get("/", defaultV2.Welcome)
 	app.Get("/health-check", http.HealthCheckHandler)
-	// app.OnErrorCode(iris.StatusNotFound, http.NotFoundHandler)
 }

@@ -2,16 +2,15 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"time"
 
+	"orchid-starter/infrastructure/rabbitmq"
 	"orchid-starter/internal/bootstrap"
-	"orchid-starter/internal/common"
 	"orchid-starter/observability/sentry"
 
-	"github.com/mataharibiz/sange/v2"
+	bunker "github.com/yudhiana/bunker/errors"
 	"github.com/yudhiana/logos"
 )
 
@@ -55,11 +54,11 @@ func (h *BaseEventHandler) RegisterHandler(handler EventHandlerInterface) {
 	h.log.Info("Event handlers registered successfully", "total_handlers", len(h.handlers))
 }
 
-// SearchEngineEventHandler processes search engine events using the registry system
-func (h *BaseEventHandler) SearchEngineEventHandler(body map[string]any) {
+// EventHandler processes search engine events using the registry system
+func (h *BaseEventHandler) EventHandler(body map[string]any) (err error) {
 	startTime := time.Now()
 
-	var event sange.EventData
+	var event rabbitmq.EventData
 	var processingError error
 
 	// Defer logging and error handling
@@ -78,7 +77,6 @@ func (h *BaseEventHandler) SearchEngineEventHandler(body map[string]any) {
 				"processing_time_ms", processingTime.Milliseconds())
 
 			sentry.SentryLogger(processingError, body)
-			h.retryEvent(event, processingError)
 
 		} else {
 			h.log.Info("Event processed successfully",
@@ -96,61 +94,22 @@ func (h *BaseEventHandler) SearchEngineEventHandler(body map[string]any) {
 				"recovery_time", time.Since(startTime))
 
 			sentry.SentryLogger(fmt.Errorf("panic occurred during event processing error: %v", r), body)
-			h.retryEvent(event, fmt.Errorf("panic occurred during event processing error: %v", r))
 		}
 	}()
-
-	// Parse event data
-	if processingError = h.parseEventData(body, &event); processingError != nil {
-		return
-	}
-
-	// Validate parsed event
-	if processingError = h.validateEvent(&event); processingError != nil {
-		return
-	}
 
 	ctx := context.Background()
 
 	// Route event to registered handler
 	processingError = h.routeEvent(ctx, event)
-}
-
-// parseEventData safely parses the event body into EventData struct
-func (h *BaseEventHandler) parseEventData(body map[string]any, event *sange.EventData) error {
-	// Marshal the body to JSON
-	dataMarshal, err := json.Marshal(body)
-	if err != nil {
-		return fmt.Errorf("failed to marshal event body: %w", err)
-	}
-
-	// Unmarshal into EventData struct
-	if err := json.Unmarshal(dataMarshal, event); err != nil {
-		return fmt.Errorf("failed to unmarshal event data: %w", err)
-	}
-
-	return nil
-}
-
-// validateEvent validates the incoming event data
-func (h *BaseEventHandler) validateEvent(event *sange.EventData) error {
-	if event == nil {
-		return fmt.Errorf("event data is nil")
-	}
-
-	if event.EventType == "" {
-		return fmt.Errorf("event type is empty")
-	}
-
-	return nil
+	return
 }
 
 // routeEvent routes the event to the registered handler
-func (h *BaseEventHandler) routeEvent(ctx context.Context, event sange.EventData) error {
+func (h *BaseEventHandler) routeEvent(ctx context.Context, event rabbitmq.EventData) error {
 	handler, exists := h.handlers[event.EventType]
 
 	if !exists {
-		return sange.NewError(sange.NotFound, ErrNoHandlerRegistered, "no handler registered event type", "event_type", event.EventType)
+		return bunker.New(bunker.StatusUnprocessableEntity).SetMessage("no handler registered event type")
 	}
 
 	h.log.Info("Processing event", "event_type", event.EventType)
@@ -179,32 +138,4 @@ func (h *BaseEventHandler) HealthCheck() map[string]any {
 // GetDI returns the dependency injection container
 func (h *BaseEventHandler) GetDI() *bootstrap.DirectInjection {
 	return h.di
-}
-
-func (h *BaseEventHandler) retryEvent(event sange.EventData, err error) {
-	// retry event to global queue
-	event.RmqRetryConfig.ErrorMessage = err.Error()
-	retryEvent := sange.EventData{
-		EventType: "retry_event",
-		Data:      event,
-	}
-
-	if h.isIgnoreEventRetry(event) {
-		return
-	}
-
-	delayMs := common.GetInt64Env("RETRY_DELAY_MS", 3000)
-	retryEvent.PublishToDelayExchange("dmp_retry", delayMs)
-}
-
-func (h *BaseEventHandler) isIgnoreEventRetry(event sange.EventData) (ok bool) {
-	ignoreEvents := map[string]bool{
-		"search-keyword-store-cron":          true,
-		"search-keyword-remove-cron":         true,
-		"company-updated-institution":        true,
-		"product-status-pkp-updated":         true,
-		"product-category-updated":           true,
-		"hotfix-product-status-pkp-rollback": true,
-	}
-	return ignoreEvents[event.EventType]
 }

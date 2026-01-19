@@ -7,9 +7,9 @@ import (
 	"strings"
 
 	"orchid-starter/internal/common"
+	"orchid-starter/internal/common/model"
 
 	"github.com/go-resty/resty/v2"
-	"github.com/mataharibiz/sange/v2/gql"
 )
 
 type ClientGQLQuery struct {
@@ -17,6 +17,12 @@ type ClientGQLQuery struct {
 	Query          string
 	GQLClientURL   string
 	VariablesQuery map[string]any
+}
+
+// This struct used for send request to GQL query
+type GraphQLRequest struct {
+	Query     string                 `json:"query"`
+	Variables map[string]interface{} `json:"variables"`
 }
 
 func NewGQLQuery(baseClient *resty.Client, token, appOrigin, GQLClientURL string) *ClientGQLQuery {
@@ -44,7 +50,7 @@ func (q *ClientGQLQuery) SetBaseQuery(query string) *ClientGQLQuery {
 	return q
 }
 
-func (q *ClientGQLQuery) SetQueryOptions(opt *gql.QueryOption) *ClientGQLQuery {
+func (q *ClientGQLQuery) SetQueryOptions(opt *model.QueryOption) *ClientGQLQuery {
 	if opt != nil {
 		q.VariablesQuery = map[string]any{
 			"query": opt,
@@ -67,7 +73,7 @@ func (q *ClientGQLQuery) SetVariablesInput() {
 
 func (q *ClientGQLQuery) DoRequest(ctx context.Context, debug bool, result any) (err error) {
 
-	payload := gql.GraphQLRequest{
+	payload := GraphQLRequest{
 		Query:     q.Query,
 		Variables: q.VariablesQuery,
 	}

@@ -2,13 +2,12 @@ package handler
 
 import (
 	"context"
-
-	"github.com/mataharibiz/sange/v2"
+	"orchid-starter/infrastructure/rabbitmq"
 )
 
 // EventHandlerInterface defines the contract for event handlers
 type EventHandlerInterface interface {
-	Handle(ctx context.Context, event sange.EventData) error
+	Handle(ctx context.Context, event rabbitmq.EventData) error
 	GetEventTypes() []string
 }
 
