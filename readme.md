@@ -82,21 +82,80 @@ If wants to generate module boilerplate code:
 ## 📁 Project Structure
 ```text
 .
-├── cmd/                # Application entrypoint
-├── config/             # Application configuration
-├── constants/          # Global constants
-├── docker/             # Docker configuration
-├── gql/                # GraphQL schema definitions
-├── http/               # HTTP server and handlers
-├── infrastructure/     # External integrations (DB, cache, etc)
-├── internal/           # Core application logic
-├── middleware/         # HTTP / auth middleware
-├── modules/            # Feature-based domain modules
-├── observability/      # Logging, metrics, tracing
-├── pkg/                # Shared / reusable packages
-├── scripts/            # Utility scripts
-├── security/           # Security-related logic
-├── .env.example        # Environment variable template
-├── gqlgen.yml          # GraphQL generator config
-└── go.mod              # Go module definition
+├── cmd/                # Application entrypoints (API, CLI, GraphQL, background tasks)
+├── config/             # Application configuration and config models
+├── constants/          # Global constants (API, context keys, timezone, etc.)
+├── docker/             # Docker build configuration
+├── gql/                # GraphQL schemas, resolvers, and generated code
+├── http/               # HTTP handlers (health check, common responses)
+├── infrastructure/     # External service integrations (DB, message broker, search)
+├── internal/           # Application bootstrap, server setup, clients, and shared utilities
+├── middleware/         # HTTP / GraphQL middleware
+├── modules/            # Feature-based domain modules (usecase, repository, delivery)
+├── observability/      # Monitoring, metrics, and error tracking
+├── pkg/                # Reusable packages shared across modules
+├── scripts/            # Helper scripts for code generation and tooling
+└── security/           # Security-related utilities (hashing, etc.)
+
 ```
+
+
+## 🏗 High-Level Architecture
+flowchart TD
+    subgraph Entrypoints["Entrypoints (cmd/)"]
+        API["API Server<br/>cmd/api"]
+        GQL["GraphQL Server<br/>cmd/gql"]
+        CLI["CLI<br/>cmd/cli"]
+        TASK["Background Tasks<br/>cmd/task"]
+    end
+
+    subgraph Bootstrap["Application Bootstrap (internal/bootstrap)"]
+        APP["App Initialization"]
+        DI["Dependency Injection"]
+        SERVER["HTTP / GQL Server Setup"]
+    end
+
+    subgraph Middleware["Middleware"]
+        MW["Auth / Context / Logging"]
+    end
+
+    subgraph Modules["Business Logic (modules/)"]
+        USECASE["Usecase<br/>Business Rules"]
+        DELIVERY["Delivery<br/>HTTP / GQL Handlers"]
+        REPO["Repository<br/>Interfaces"]
+    end
+
+    subgraph Infrastructure["Infrastructure"]
+        DB["MySQL"]
+        MQ["RabbitMQ"]
+        ES["Elasticsearch"]
+    end
+
+    subgraph Shared["Shared & Cross-cutting"]
+        COMMON["internal/common"]
+        CLIENTS["internal/clients"]
+        PKG["pkg"]
+        OBS["observability"]
+        SEC["security"]
+    end
+
+    API --> Bootstrap
+    GQL --> Bootstrap
+    CLI --> Bootstrap
+    TASK --> Bootstrap
+
+    Bootstrap --> MW
+    MW --> DELIVERY
+    DELIVERY --> USECASE
+    USECASE --> REPO
+
+    REPO --> DB
+    REPO --> MQ
+    REPO --> ES
+
+    USECASE --> COMMON
+    DELIVERY --> COMMON
+    USECASE --> CLIENTS
+
+    Bootstrap --> OBS
+    Bootstrap --> SEC
