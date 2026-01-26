@@ -5,7 +5,7 @@ import (
 
 	modelCommon "orchid-starter/internal/common/model"
 
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 func CalculatePagination(total int64, limit int, page int) (pagination modelCommon.PaginationResult) {
@@ -19,7 +19,7 @@ func CalculatePagination(total int64, limit int, page int) (pagination modelComm
 
 	totalPageInt, errConvert := ConvertFloat64ToInt(totalPage)
 	if errConvert != nil {
-		logging.NewLogger().Error("Failed calculate pagination at convert totalPage to int", "error", errConvert)
+		logos.NewLogger().Error("Failed calculate pagination at convert totalPage to int", "error", errConvert)
 		return
 	}
 

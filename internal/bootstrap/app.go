@@ -6,20 +6,20 @@ import (
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap/server/applications"
 
-	"github.com/kataras/iris/v12"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/go-chi/chi/v5"
+	"github.com/yudhiana/logos"
 )
 
 type Container struct {
-	App *iris.Application
+	App *chi.Mux
 	Cfg *config.LocalConfig
 	DI  *DirectInjection
-	Log *logging.LogEntry
+	Log *logos.LogEntry
 }
 
 // NewContainer creates a new application container with proper error handling
 func NewContainer() (*Container, error) {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 	logger.Info("Initializing application container...")
 
 	// Load configuration
@@ -36,12 +36,11 @@ func NewContainer() (*Container, error) {
 	}
 	logger.Info("Dependencies initialized successfully")
 
-	// Initialize Iris application
-	app := applications.GetIrisApplication()
+	app := applications.GetChiApplication()
 	if app == nil {
-		return nil, fmt.Errorf("failed to initialize Iris application")
+		return nil, fmt.Errorf("failed to initialize application")
 	}
-	logger.Info("Iris application initialized successfully")
+	logger.Info("application initialized successfully")
 
 	container := &Container{
 		App: app,
@@ -56,7 +55,7 @@ func NewContainer() (*Container, error) {
 
 // Close gracefully shuts down the container and its resources
 func (c *Container) Close() error {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 	logger.Info("Shutting down application container...")
 
 	var errors []error
@@ -79,8 +78,8 @@ func (c *Container) GetConfig() *config.LocalConfig {
 	return c.Cfg
 }
 
-// GetApp returns the Iris application
-func (c *Container) GetApp() *iris.Application {
+// GetApp returns the application
+func (c *Container) GetApp() *chi.Mux {
 	return c.App
 }
 
@@ -91,7 +90,7 @@ func (c *Container) GetDI() *DirectInjection {
 
 // Legacy support - will be deprecated
 func StartContainer() *Container {
-	logger := logging.NewLogger()
+	logger := logos.NewLogger()
 	logger.Warn("StartContainer() is deprecated, use NewContainer() instead")
 	container, err := NewContainer()
 	if err != nil {

@@ -66,7 +66,7 @@ import (
 	"${APP_NAME}/internal/clients"
 	"${APP_NAME}/modules/${MODULE_SLUG}/repository"
 
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 	"gorm.io/gorm"
 )
 
@@ -91,7 +91,7 @@ EOF
     "repository/${FILE_NAME}_repository.go")
       cat <<EOF
 import (
-    "github.com/mataharibiz/ward/logging"
+    "github.com/yudhiana/logos"
     "gorm.io/gorm"
 )
 

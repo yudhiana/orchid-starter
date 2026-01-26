@@ -1,12 +1,9 @@
 package security
 
 import (
-	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"time"
-
-	"github.com/mataharibiz/sange/v2"
 )
 
 const (
@@ -29,14 +26,4 @@ func GenerateRandomStaring() string {
 	}
 
 	return string(combined)
-}
-
-func HmacShaKey(key string) (shaKey []byte, err error) {
-	shaKey, errDecode := base64.StdEncoding.DecodeString(key)
-	if errDecode != nil {
-		errMsg := fmt.Errorf("failed to decode secret. Error: %w", errDecode)
-		return nil, sange.NewSetError(sange.OperationFailed, errMsg, errMsg.Error(), "security", "HmacShaKey")
-	}
-
-	return
 }

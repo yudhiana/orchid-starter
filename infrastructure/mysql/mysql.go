@@ -14,7 +14,7 @@ import (
 	"gorm.io/gorm/schema"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/mataharibiz/ward/logging"
+	"github.com/yudhiana/logos"
 )
 
 type mysqlUtil struct {
@@ -54,7 +54,7 @@ func GetMySQLConnection(cfg *config.LocalConfig) *gorm.DB {
 			cfg.MySQLConfig.MySQLDatabaseName +
 			"?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True&loc=Local"
 
-		logging.NewLogger().Info("Initialize MySQL connection", "URI", conn)
+		logos.NewLogger().Info("Initialize MySQL connection", "URI", conn)
 		db, err := gorm.Open(mysql.New(mysql.Config{
 			DSN: conn,
 		}), gormConfig(cfg.DatabaseDebug))

@@ -2,44 +2,22 @@ package common
 
 import (
 	"context"
-	"strconv"
-	"strings"
+	"net/http"
 
 	"orchid-starter/constants"
 
 	modelCommon "orchid-starter/internal/common/model"
-
-	"github.com/kataras/iris/v12"
-	"github.com/mataharibiz/sange/v2"
 )
 
-// ExtractRequestContext extracts common headers from iris.Context and creates RequestContext
-func ExtractRequestContext(irisCtx iris.Context) *modelCommon.RequestContext {
-	userID, _ := strconv.ParseUint(irisCtx.GetHeader(constants.HeaderUserID), 10, 64)
-	companyID, _ := strconv.ParseUint(irisCtx.GetHeader(constants.HeaderCompanyID), 10, 64)
-	authHeader := irisCtx.GetHeader(constants.HeaderAuthorization)
-	if strings.HasPrefix(authHeader, sange.OAUTH) {
-		authHeader = strings.TrimPrefix(authHeader, sange.OAUTH)
-		authHeader = strings.TrimSpace(authHeader)
-	}
-
+// ExtractRequestContext extracts common headers from http.Request and creates RequestContext
+func ExtractRequestContext(r *http.Request) *modelCommon.RequestContext {
 	return &modelCommon.RequestContext{
-		AppOrigin:       irisCtx.GetHeader(constants.HeaderAppOrigin),
-		AppToken:        authHeader,
-		UserID:          userID,
-		CompanyID:       companyID,
-		RequestID:       irisCtx.GetHeader(constants.HeaderRequestID),
-		AppRequestID:    irisCtx.GetHeader(constants.HeaderAppRequestID),
-		TokenState:      irisCtx.GetHeader(constants.HeaderTokenState),
-		TokenIdentifier: irisCtx.GetHeader(constants.HeaderTokenIdentifier),
-		ThirdParty:      irisCtx.GetHeader(constants.HeaderThirdParty),
-		Partner:         irisCtx.GetHeader(constants.HeaderPartner),
-		ClientID:        irisCtx.GetHeader(constants.HeaderClientID),
+		RequestID: r.Header.Get(constants.HeaderRequestID),
 	}
 }
 
-func SetRequestContext(ctx context.Context, irisCtx iris.Context) context.Context {
-	reqCtx := ExtractRequestContext(irisCtx)
+func SetRequestContext(ctx context.Context, r *http.Request) context.Context {
+	reqCtx := ExtractRequestContext(r)
 	return modelCommon.SetRequestContext(ctx, reqCtx)
 }
 
@@ -49,88 +27,10 @@ func GetRequestContext(ctx context.Context) context.Context {
 	return modelCommon.WithRequestContext(ctx, constants.HeaderRequestID, requestId)
 }
 
-// GetAppOriginFromContext extracts app origin from context
-func GetAppOriginFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.AppOrigin
-	}
-	return ""
-}
-
-// GetAppTokenFromContext extracts app token from context
-func GetAppTokenFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.AppToken
-	}
-	return ""
-}
-
-// GetUserIDFromContext extracts user ID from context
-func GetUserIDFromContext(ctx context.Context) uint64 {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.UserID
-	}
-	return 0
-}
-
-// GetCompanyIDFromContext extracts company ID from context
-func GetCompanyIDFromContext(ctx context.Context) uint64 {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.CompanyID
-	}
-	return 0
-}
-
 // GetRequestIDFromContext extracts request ID from context for tracing
 func GetRequestIDFromContext(ctx context.Context) string {
 	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
 		return reqCtx.RequestID
-	}
-	return ""
-}
-
-func GetAppRequestIDFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.AppRequestID
-	}
-	return ""
-}
-
-// GetTokenStateFromContext extracts token state from context
-func GetTokenStateFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.TokenState
-	}
-	return ""
-}
-
-// GetThirdPartyFromContext extracts third party from context
-func GetThirdPartyFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.ThirdParty
-	}
-	return ""
-}
-
-// GetPartnerFromContext extracts partner from context
-func GetPartnerFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.Partner
-	}
-	return ""
-}
-
-// GetTokenIdentifierFromContext extracts token identifier from context
-func GetTokenIdentifierFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.TokenIdentifier
-	}
-	return ""
-}
-
-func GetClientIDFromContext(ctx context.Context) string {
-	if reqCtx, ok := modelCommon.GetRequestContext(ctx); ok {
-		return reqCtx.ClientID
 	}
 	return ""
 }

@@ -16,7 +16,7 @@ func NewApplication(di *bootstrap.DirectInjection) cli.Command {
 		Usage:        "run cli-init-handler",
 		Description:  "cli-init-handler",
 		QueueName:    "cli-init-event-queue",
-		ExchangeName: "dmp_event",
+		ExchangeName: "event",
 		LoggerPrefix: "init-handler",
 	}
 
