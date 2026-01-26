@@ -2,23 +2,22 @@ package common
 
 import (
 	"context"
+	"net/http"
 
 	"orchid-starter/constants"
 
 	modelCommon "orchid-starter/internal/common/model"
-
-	"github.com/kataras/iris/v12"
 )
 
-// ExtractRequestContext extracts common headers from iris.Context and creates RequestContext
-func ExtractRequestContext(irisCtx iris.Context) *modelCommon.RequestContext {
+// ExtractRequestContext extracts common headers from http.Request and creates RequestContext
+func ExtractRequestContext(r *http.Request) *modelCommon.RequestContext {
 	return &modelCommon.RequestContext{
-		RequestID: irisCtx.GetHeader(constants.HeaderRequestID),
+		RequestID: r.Header.Get(constants.HeaderRequestID),
 	}
 }
 
-func SetRequestContext(ctx context.Context, irisCtx iris.Context) context.Context {
-	reqCtx := ExtractRequestContext(irisCtx)
+func SetRequestContext(ctx context.Context, r *http.Request) context.Context {
+	reqCtx := ExtractRequestContext(r)
 	return modelCommon.SetRequestContext(ctx, reqCtx)
 }
 

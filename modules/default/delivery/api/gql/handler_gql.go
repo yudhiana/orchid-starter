@@ -1,6 +1,7 @@
 package gqlHandler
 
 import (
+	"net/http"
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/resolvers"
 	"orchid-starter/internal/bootstrap"
@@ -8,8 +9,6 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/go-chi/chi/v5"
-	"github.com/kataras/iris/v12"
 )
 
 type graphHandler struct {
@@ -22,11 +21,7 @@ func NewGraphHandler(di *bootstrap.DirectInjection) *graphHandler {
 	}
 }
 
-func NewDefaultGQLHandler(app chi.Router, di *bootstrap.DirectInjection) {
-
-}
-
-func (base *graphHandler) GQLHandler() iris.Handler {
+func (base *graphHandler) GQLHandler() http.HandlerFunc {
 
 	// directiveHandler := directive.NewDirective(base.di)
 	conf := generated.Config{
@@ -36,16 +31,16 @@ func (base *graphHandler) GQLHandler() iris.Handler {
 	}
 
 	serverGraphql := handler.NewDefaultServer(generated.NewExecutableSchema(conf))
-	return func(ctx iris.Context) {
-		baseContext := ctx.Request().Context()
-		serverGraphql.ServeHTTP(ctx.ResponseWriter(), ctx.Request().WithContext(common.SetRequestContext(baseContext, ctx)))
+	return func(w http.ResponseWriter, r *http.Request) {
+		baseContext := r.Context()
+		serverGraphql.ServeHTTP(w, r.WithContext(common.SetRequestContext(baseContext, r)))
 	}
 }
 
-func PlaygroundHandler() iris.Handler {
+func PlaygroundHandler() http.HandlerFunc {
 	h := playground.Handler("GraphQL Playground", "/gql/query")
 
-	return func(ctx iris.Context) {
-		h.ServeHTTP(ctx.ResponseWriter(), ctx.Request())
+	return func(w http.ResponseWriter, r *http.Request) {
+		h.ServeHTTP(w, r)
 	}
 }

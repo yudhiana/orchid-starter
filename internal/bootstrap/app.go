@@ -38,9 +38,9 @@ func NewContainer() (*Container, error) {
 
 	app := applications.GetChiApplication()
 	if app == nil {
-		return nil, fmt.Errorf("failed to initialize Iris application")
+		return nil, fmt.Errorf("failed to initialize application")
 	}
-	logger.Info("Iris application initialized successfully")
+	logger.Info("application initialized successfully")
 
 	container := &Container{
 		App: app,
@@ -78,7 +78,7 @@ func (c *Container) GetConfig() *config.LocalConfig {
 	return c.Cfg
 }
 
-// GetApp returns the Iris application
+// GetApp returns the application
 func (c *Container) GetApp() *chi.Mux {
 	return c.App
 }
