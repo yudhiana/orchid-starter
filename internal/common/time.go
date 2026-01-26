@@ -2,17 +2,18 @@ package common
 
 import (
 	"fmt"
+	"orchid-starter/constants"
 	"time"
 )
 
 func GetIndonesianTimeZone(timeZoneCode string) (*time.Location, error) {
 	switch timeZoneCode {
-	case "WIB":
-		return time.LoadLocation("Asia/Jakarta")
-	case "WITA":
-		return time.LoadLocation("Asia/Makassar")
-	case "WIT":
-		return time.LoadLocation("Asia/Jayapura")
+	case constants.WIB:
+		return time.LoadLocation(constants.TimeZoneAsiaJakarta)
+	case constants.WITA:
+		return time.LoadLocation(constants.TimeZoneAsiaMakassar)
+	case constants.WIT:
+		return time.LoadLocation(constants.TimeZoneAsiaJayapura)
 	default:
 		return nil, fmt.Errorf("unknown Indonesian time zone: %s", timeZoneCode)
 	}
