@@ -101,6 +101,8 @@ If wants to generate module boilerplate code:
 
 
 ## 🏗 High-Level Architecture
+
+```mermaid
 flowchart TD
     subgraph Entrypoints["Entrypoints (cmd/)"]
         API["API Server<br/>cmd/api"]
@@ -159,3 +161,5 @@ flowchart TD
 
     Bootstrap --> OBS
     Bootstrap --> SEC
+
+```
