@@ -40,11 +40,10 @@ RUN git config \
 
 
 # make a small image #
-FROM harbor.mbizmarket.my.id:14567/mbizmarket/alpine:latest
-
+FROM alpine:latest
 ENV APP_NAME=orchid-starter
 
-USER root
+USER appuser
 
 RUN mkdir -p /app/$APP_NAME
 
@@ -57,5 +56,3 @@ RUN chmod +x /app/$APP_NAME/main
 RUN chmod +x /app/$APP_NAME/task
 
 WORKDIR /app/$APP_NAME
-
-USER mbiz

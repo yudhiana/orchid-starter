@@ -18,7 +18,7 @@ func main() {
 	app := cli.NewApp()
 	app.Name = "Command execution for Go API CLI"
 	app.Usage = "Run task by command CLI for Golang"
-	app.Author = "dmp backend 2025"
+	app.Author = "backend 2025"
 	app.Version = "1.0.0"
 
 	sentry.InitSentry()
