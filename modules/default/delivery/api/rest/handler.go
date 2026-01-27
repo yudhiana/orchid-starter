@@ -23,5 +23,6 @@ func NewDefaultHandler(app chi.Router, di *bootstrap.DirectInjection) {
 	defaultV2 := v2.NewDefaultHandler(defaultUseCase)
 
 	app.Get("/", defaultV2.Welcome)
+	app.Get("/error-check", defaultV2.ErrorResponse)
 	app.Get("/health-check", http.HealthCheckHandler)
 }
