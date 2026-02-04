@@ -72,7 +72,7 @@ require github.com/tyler-sommer/stick v1.0.6
 // ==============================
 require (
 	github.com/yudhiana/bunker v1.0.0
-	github.com/yudhiana/logos v0.0.0-20260115164453-3f36ea5c5342
+	github.com/yudhiana/logos v1.1.0
 )
 
 // ==============================
