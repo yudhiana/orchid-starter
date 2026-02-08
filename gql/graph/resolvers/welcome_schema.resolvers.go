@@ -25,7 +25,7 @@ func (r *queryResolver) Welcome(ctx context.Context) (*model.ResponseWelcome, er
 	// Initialize usecase with client access
 	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient)
 	return &model.ResponseWelcome{
-		Message: uc.WelcomeUsecase(ctx),
+		Message: uc.GetWelcome(ctx).Message,
 	}, nil
 }
 

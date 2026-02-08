@@ -1,5 +1,5 @@
-package models
+package modelDomain
 
-type Default struct {
-	Message string
+type Welcome struct {
+	Message string `json:"message"`
 }

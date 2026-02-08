@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	modelDomain "orchid-starter/modules/default/domain/models"
 
 	"github.com/elastic/go-elasticsearch/v9"
 	"gorm.io/gorm"
@@ -19,8 +20,10 @@ func NewDefaultRepository(db *gorm.DB, es *elasticsearch.Client) DefaultReposito
 	}
 }
 
-func (repo *defaultRepository) Welcome(ctx context.Context) string {
-	return "Welcome to orchid-starter..."
+func (repo *defaultRepository) GetWelcome(ctx context.Context) modelDomain.Welcome {
+	return modelDomain.Welcome{
+		Message: "Welcome to orchid-starter...",
+	}
 }
 
 func (repo *defaultRepository) WithTx(tx *gorm.DB) DefaultRepositoryInterface {

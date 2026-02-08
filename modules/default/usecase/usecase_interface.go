@@ -1,7 +1,10 @@
 package usecase
 
-import "context"
+import (
+	"context"
+	modelUsecase "orchid-starter/modules/default/usecase/models"
+)
 
 type DefaultUsecaseInterface interface {
-	WelcomeUsecase(ctx context.Context) string
+	GetWelcome(ctx context.Context) modelUsecase.GetWelcome
 }

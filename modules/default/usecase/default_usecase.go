@@ -5,6 +5,7 @@ import (
 
 	"orchid-starter/internal/clients"
 	"orchid-starter/modules/default/repository"
+	modelUsecase "orchid-starter/modules/default/usecase/models"
 
 	"gorm.io/gorm"
 )
@@ -23,7 +24,7 @@ func NewDefaultUsecase(db *gorm.DB, r repository.DefaultRepositoryInterface, cli
 	}
 }
 
-func (uc *defaultUsecase) WelcomeUsecase(ctx context.Context) (result string) {
+func (uc *defaultUsecase) GetWelcome(ctx context.Context) (result modelUsecase.GetWelcome) {
 	/*
 		    NOTE: This usecase is responsible for encapsulating business logic and does not handle data creation or persistence.
 			Example use for transaction!
@@ -47,5 +48,7 @@ func (uc *defaultUsecase) WelcomeUsecase(ctx context.Context) (result string) {
 			})
 	*/
 
-	return uc.repository.Welcome(ctx)
+	return modelUsecase.GetWelcome{
+		Message: uc.repository.GetWelcome(ctx).Message,
+	}
 }
