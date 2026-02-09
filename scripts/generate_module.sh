@@ -74,7 +74,7 @@ type ${lowerCamelModule}Usecase struct {
 	db         *gorm.DB // use for transaction db only!
 	repository repository.${CamelModule}RepositoryInterface
 	client     *clients.Client
-	log        *logging.LogEntry
+	log        *logos.LogEntry
 }
 
 func New${CamelModule}Usecase(db *gorm.DB, r repository.${CamelModule}RepositoryInterface, client *clients.Client) ${CamelModule}UsecaseInterface {
@@ -82,7 +82,7 @@ func New${CamelModule}Usecase(db *gorm.DB, r repository.${CamelModule}Repository
 		db:         db,
 		repository: r,
 		client:     client,
-		log:        logging.NewLogger(),
+		log:        logos.NewLogger(),
 	}
 }
 EOF
@@ -97,13 +97,13 @@ import (
 
 type ${lowerCamelModule}Repository struct {
 	db  *gorm.DB
-	log *logging.LogEntry
+	log *logos.LogEntry
 }
 
 func New${CamelModule}Repository(db *gorm.DB) ${CamelModule}RepositoryInterface {
 	return &${lowerCamelModule}Repository{
 		db:  db,
-		log: logging.NewLogger(),
+		log: logos.NewLogger(),
 	}
 }
 
@@ -130,17 +130,20 @@ get_package_name() {
     "delivery/event") echo "event" ;;
     "repository") echo "repository" ;;
     "usecase") echo "usecase" ;;
-    "model/db") echo "modelDB" ;;
-    "model/request") echo "modelRequest" ;;
-    "model/response") echo "modelResponse" ;;
-    "model/repository") echo "modelRepository" ;;
-    "model/usecase") echo "modelUsecase" ;;
+    "domain/models") echo "modelDomain" ;;
+    "delivery/models/request") echo "modelRequest" ;;
+    "delivery/models/response") echo "modelResponse" ;;
+    "repository/models") echo "modelRepository" ;;
+    "usecase/models") echo "modelUsecase" ;;
     *) echo "main" ;;
   esac
 }
 
 # Struktur paths relatif dari MODULES_ROOT
 paths=(
+  "domain/models/${FILE_NAME}.go"
+  "delivery/models/request/request_${FILE_NAME}.go"
+  "delivery/models/response/response_${FILE_NAME}.go"
   "delivery/api/rest/handler.go"
   "delivery/api/rest/v2/handler_v2.go"
   "delivery/event/event.go"
@@ -148,11 +151,8 @@ paths=(
   "repository/repository_interface.go"
   "usecase/${FILE_NAME}_usecase.go"
   "usecase/usecase_interface.go"
-  "model/db/${FILE_NAME}.go"
-  "model/request/request_${FILE_NAME}.go"
-  "model/response/response_${FILE_NAME}.go"
-  "model/repository/${FILE_NAME}_repo_input.go"
-  "model/usecase/${FILE_NAME}_usecase_input.go"
+  "repository/models/${FILE_NAME}_repo_input.go"
+  "usecase/models/${FILE_NAME}_usecase_input.go"
 )
 
 # Loop buat direktori dan file
