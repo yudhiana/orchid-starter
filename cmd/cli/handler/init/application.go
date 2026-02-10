@@ -5,11 +5,11 @@ import (
 	"orchid-starter/internal/bootstrap"
 	defaultEventHandler "orchid-starter/modules/default/delivery/event"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
 // NewApplication creates a CLI application for company event handling
-func NewApplication(di *bootstrap.DirectInjection) cli.Command {
+func NewApplication(di *bootstrap.DirectInjection) *cli.Command {
 	config := handler.EventHandlerConfig{
 		Name:         "cli-init-handler",
 		Alias:        "cih",

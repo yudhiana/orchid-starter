@@ -1,26 +1,29 @@
 package main
 
 import (
+	"context"
+	"net/mail"
 	"os"
-	"sort"
 
-	"orchid-starter/cmd/task/init"
+	initTaskApplication "orchid-starter/cmd/task/init"
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap"
 	"orchid-starter/observability/sentry"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 
 	_ "github.com/joho/godotenv/autoload"
 )
 
 func main() {
-	app := cli.NewApp()
-	app.Name = "Command execution for Go API CLI"
-	app.Usage = "Run task by command CLI for Golang"
-	app.Author = "backend 2025"
-	app.Version = "1.0.0"
-
+	app := &cli.Command{
+		Name:    "Command execution for Go API CLI",
+		Usage:   "Run task by command CLI for Golang",
+		Version: "1.0.0",
+		Authors: []any{
+			mail.Address{Name: "yudhiana", Address: "yudhiana@orchid-starter.co"},
+		},
+	}
 	sentry.InitSentry()
 
 	di, err := bootstrap.NewDirectInjection(config.GetLocalConfig())
@@ -29,15 +32,12 @@ func main() {
 	}
 	defer di.Close() // Ensure cleanup even if app panics
 
-	app.Commands = []cli.Command{
+	app.Commands = []*cli.Command{
 		initTaskApplication.NewInitTask(di),
 		// TODO : add other commands
 	}
 
-	sort.Sort(cli.CommandsByName(app.Commands))
-	sort.Sort(cli.FlagsByName(app.Flags))
-
-	err = app.Run(os.Args)
+	err = app.Run(context.Background(), os.Args)
 	if err != nil {
 		panic(err.Error())
 	}

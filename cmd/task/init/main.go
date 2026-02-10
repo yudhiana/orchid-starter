@@ -1,34 +1,35 @@
 package initTaskApplication
 
 import (
+	"context"
 	"orchid-starter/cmd/task/init/handler/task"
 	modelInit "orchid-starter/cmd/task/init/model"
 	"orchid-starter/internal/bootstrap"
 
-	"github.com/urfave/cli"
+	"github.com/urfave/cli/v3"
 )
 
-func NewInitTask(di *bootstrap.DirectInjection) cli.Command {
-	return cli.Command{
+func NewInitTask(di *bootstrap.DirectInjection) *cli.Command {
+	return &cli.Command{
 		Name:    "init-task",
 		Aliases: []string{"init-task"},
 		Usage:   "Run init-task",
 		Flags: []cli.Flag{
-			cli.UintFlag{
+			&cli.UintFlag{
 				Name:  "id",
 				Value: 1,
 			},
-			cli.BoolFlag{
+			&cli.BoolFlag{
 				Name: "count",
 			},
-			cli.StringFlag{
+			&cli.StringFlag{
 				Name:     "name",
 				Required: false,
 			},
 		},
-		Action: func(c *cli.Context) error {
+		Action: func(c context.Context, cmd *cli.Command) error {
 			return task.NewTask(di, modelInit.Init{
-				ID: c.Uint64("id"),
+				ID: cmd.Uint64("id"),
 			}).Start()
 		},
 	}
