@@ -1,0 +1,34 @@
+FROM golang:1.24-alpine AS builder
+
+ARG USERNAME
+ARG PASSWORD
+
+ENV APP_NAME=orchid-starter
+ENV ACCESS_TOKEN_USR=${USERNAME}
+ENV ACCESS_TOKEN_PWD=${PASSWORD}
+
+ENV GOSUMDB=off
+ENV CGO_ENABLED=0
+ENV GOOS=linux
+
+RUN apk --no-cache add bash \
+	curl \
+	git \
+	gcc \
+	g++ 
+
+RUN git config \
+	--global \
+	url."https://${ACCESS_TOKEN_USR}:${ACCESS_TOKEN_PWD}@github.com".insteadOf \
+	"https://github.com"
+
+
+RUN go install github.com/air-verse/air@v1.62.0
+
+WORKDIR /app/${APP_NAME}
+
+COPY ./ /app/${APP_NAME}
+
+RUN go mod download
+
+ENTRYPOINT [ "air", "-c", ".air.toml" ]
