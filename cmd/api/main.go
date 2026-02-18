@@ -27,7 +27,6 @@ func main() {
 
 	// Initialize and start server
 	srv := server.NewServer(container)
-	log.Println("Starting server...")
 	if err := srv.Run(); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}

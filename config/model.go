@@ -37,10 +37,10 @@ type MySQLConfig struct {
 	MySQLUsername     string `env:"USERNAME_DB,required"`
 	MySQLPassword     string `env:"PASSWORD_DB,required"`
 
-	MySQLSetMaxIdleConns      int `env:"SET_MAX_IDLE_CONNS_MYSQL" envDefault:"5"`
-	MySQLSetMaxOpenConns      int `env:"SET_MAX_OPEN_CONNS_MYSQL" envDefault:"10"`
-	MySQLSetMaxConnLifetime   int `env:"SET_CONN_MAX_LIFETIME_MYSQL" envDefault:"60"`
-	MySQLSetMaxIdleConnection int `env:"SET_MAX_IDLE_CONNECTION_MYSQL" envDefault:"5"`
+	MySQLSetMaxIdleConns      int `env:"MAX_IDLE_CONNS_MYSQL" envDefault:"5"`
+	MySQLSetMaxOpenConns      int `env:"MAX_OPEN_CONNS_MYSQL" envDefault:"10"`
+	MySQLSetMaxConnLifetime   int `env:"CONN_MAX_LIFETIME_MYSQL" envDefault:"60"`
+	MySQLSetMaxIdleConnection int `env:"MAX_IDLE_CONNECTION_MYSQL" envDefault:"5"`
 }
 
 type LoggerConfig struct {
