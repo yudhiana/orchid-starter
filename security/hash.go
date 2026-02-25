@@ -1,6 +1,7 @@
 package security
 
 import (
+	"encoding/base64"
 	"fmt"
 	"math/rand"
 	"time"
@@ -26,4 +27,13 @@ func GenerateRandomStaring() string {
 	}
 
 	return string(combined)
+}
+
+func HmacShaKey(key string) (shaKey []byte, err error) {
+	shaKey, errDecode := base64.StdEncoding.DecodeString(key)
+	if errDecode != nil {
+		err = fmt.Errorf("failed to decode key secret Error: %w", errDecode)
+		return
+	}
+	return
 }

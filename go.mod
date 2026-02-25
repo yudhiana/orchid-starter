@@ -85,6 +85,11 @@ require gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
 // ==============================
 require github.com/DATA-DOG/go-sqlmock v1.5.2
 
+// ==============================
+// Security & JWT
+// ==============================
+require github.com/golang-jwt/jwt/v5 v5.3.1
+
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/agnivade/levenshtein v1.2.1 // indirect
