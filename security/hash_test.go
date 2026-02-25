@@ -41,3 +41,19 @@ func TestHmacShaKey(t *testing.T) {
     }
 }
 
+
+func TestHmacShaEncode(t *testing.T) {
+    raw := "hello-world"
+    enc := HmacShaEncode(raw)
+    if enc == "" {
+        t.Fatal("expected non-empty encoded string")
+    }
+    // verify it is base64
+    decoded, err := base64.StdEncoding.DecodeString(enc)
+    if err != nil {
+        t.Fatalf("encoded value is not valid base64: %v", err)
+    }
+    if string(decoded) != raw {
+        t.Errorf("decoded mismatch: got %q, want %q", decoded, raw)
+    }
+}

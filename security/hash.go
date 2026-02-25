@@ -37,3 +37,7 @@ func HmacShaKey(key string) (shaKey []byte, err error) {
 	}
 	return
 }
+
+func HmacShaEncode(raw string) string {
+	return base64.StdEncoding.EncodeToString([]byte(raw))
+}
