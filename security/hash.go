@@ -1,6 +1,7 @@
 package security
 
 import (
+	"crypto"
 	"encoding/base64"
 	"fmt"
 	"math/rand"
@@ -40,4 +41,19 @@ func HmacShaKey(key string) (shaKey []byte, err error) {
 
 func HmacShaEncode(raw string) string {
 	return base64.StdEncoding.EncodeToString([]byte(raw))
+}
+
+func GenerateHash(key string, hashType crypto.Hash) ([]byte, error) {
+	switch hashType {
+	case crypto.SHA256:
+		hash := crypto.SHA256.New()
+		hash.Write([]byte(key))
+		return hash.Sum(nil), nil
+	case crypto.SHA512:
+		hash := crypto.SHA512.New()
+		hash.Write([]byte(key))
+		return hash.Sum(nil), nil
+	default:
+		return nil, fmt.Errorf("unsupported hash type: %v", hashType)
+	}
 }
