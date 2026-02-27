@@ -15,7 +15,7 @@ const (
 	Chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
 )
 
-func GenerateRandomStaring() string {
+func GenerateRandomString() string {
 	randomBytes := make([]byte, 16)
 	for i := range randomBytes {
 		randomBytes[i] = Chars[rand.Intn(len(Chars))]
