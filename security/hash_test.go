@@ -44,7 +44,7 @@ func TestHmacShaKey(t *testing.T) {
 
 func TestHmacShaEncode(t *testing.T) {
     raw := "hello-world"
-    enc := HmacShaEncode(raw)
+    enc := HmacShaEncode([]byte(raw))
     if enc == "" {
         t.Fatal("expected non-empty encoded string")
     }

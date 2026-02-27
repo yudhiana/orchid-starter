@@ -2,21 +2,32 @@ package security
 
 import (
 	"crypto"
+	"crypto/hmac"
 	"crypto/rand"
 	"crypto/rsa"
 	"fmt"
 )
 
-func GenerateSignature(priv *rsa.PrivateKey, signString string) (string, error) {
-	hashString, err := GenerateHash(signString, crypto.SHA256)
-	if err != nil {
-		return "", fmt.Errorf("failed to generate hash Error: %w", err)
+func GenerateAsymmetricSignature(privKey *rsa.PrivateKey, signToString []byte, hashType crypto.Hash) (string, error) {
+	hashed, errHash := Digest(hashType, signToString)
+	if errHash != nil {
+		return "", fmt.Errorf("failed to generate hash Error: %w", errHash)
 	}
 
-	signature, err := rsa.SignPKCS1v15(rand.Reader, priv, crypto.SHA256, hashString)
-	if err != nil {
-		return "", fmt.Errorf("failed to generate signature Error: %w", err)
+	signature, errSign := rsa.SignPKCS1v15(rand.Reader, privKey, hashType, hashed)
+	if errSign != nil {
+		return "", fmt.Errorf("failed to generate signature Error: %w", errSign)
 	}
 
-	return HmacShaEncode(string(signature)), nil
+	return HmacShaEncode(signature), nil
+}
+
+func GenerateSymmetricSignature(secretKey string, signToString []byte, hashType crypto.Hash) string {
+
+	hasher := hmac.New(hashType.New, []byte(secretKey))
+	hasher.Write(signToString)
+	signature := hasher.Sum(nil)
+
+	return HmacShaEncode(signature)
+
 }
