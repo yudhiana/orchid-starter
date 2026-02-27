@@ -29,5 +29,4 @@ func GenerateSymmetricSignature(secretKey string, signToString []byte, hashType 
 	signature := hasher.Sum(nil)
 
 	return HmacShaEncode(signature)
-
 }
