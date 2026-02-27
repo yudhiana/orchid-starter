@@ -8,13 +8,13 @@ import (
 	"fmt"
 )
 
-func GenerateAsymmetricSignature(privKey *rsa.PrivateKey, signToString []byte, hashType crypto.Hash) (string, error) {
+func GenerateAsymmetricSignature(privateKey *rsa.PrivateKey, signToString []byte, hashType crypto.Hash) (string, error) {
 	hashed, errHash := Digest(hashType, signToString)
 	if errHash != nil {
 		return "", fmt.Errorf("failed to generate hash Error: %w", errHash)
 	}
 
-	signature, errSign := rsa.SignPKCS1v15(rand.Reader, privKey, hashType, hashed)
+	signature, errSign := rsa.SignPKCS1v15(rand.Reader, privateKey, hashType, hashed)
 	if errSign != nil {
 		return "", fmt.Errorf("failed to generate signature Error: %w", errSign)
 	}

@@ -8,17 +8,17 @@ import (
 	"os"
 )
 
-func GetRSAFromFile(location string) (privateKey *rsa.PrivateKey, err error) {
+func GetPrivateKeyFromFile(location string) (privateKey *rsa.PrivateKey, err error) {
 	// read the PEM file
 	byteData, errRead := os.ReadFile(location)
 	if errRead != nil {
 		return nil, fmt.Errorf("failed to read rsa file Error: %w", errRead)
 	}
 
-	return GetRSA(byteData)
+	return GetPrivateKey(byteData)
 }
 
-func GetRSA[T []byte | string](pemData T) (privateKey *rsa.PrivateKey, err error) {
+func GetPrivateKey[T []byte | string](pemData T) (privateKey *rsa.PrivateKey, err error) {
 	// convert to []byte for decoding
 	var data []byte
 	switch v := any(pemData).(type) {
