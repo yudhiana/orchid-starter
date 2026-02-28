@@ -60,6 +60,22 @@ services:
       timeout: 30s
       retries: 10
 
+    # Redis
+  redis:
+    image: redis:7.2-alpine
+    container_name: orchid-redis-dev
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - orchid-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 10s
+      retries: 10
+
   # Main Application
   app:
     build:
@@ -87,6 +103,7 @@ volumes:
   mysql_data:
   elasticsearch_data:
   rabbitmq_data:
+  redis_data:
 
 networks:
   orchid-network:
