@@ -18,11 +18,7 @@ import (
 	"github.com/yudhiana/logos"
 )
 
-type mysqlUtil struct {
-	mysql *gorm.DB
-}
-
-var mysqlInstance *mysqlUtil
+var mysqlInstance *gorm.DB
 var mysqlOnce sync.Once
 
 func getLogger(debug bool) logger.Interface {
@@ -80,13 +76,11 @@ func GetMySQLConnection(cfg *config.LocalConfig) *gorm.DB {
 		sqlDB.SetMaxIdleConns(cfg.MySQLConfig.MySQLSetMaxIdleConns)
 		sqlDB.SetMaxOpenConns(cfg.MySQLConfig.MySQLSetMaxOpenConns)
 
-		mysqlInstance = &mysqlUtil{
-			mysql: db,
-		}
+		mysqlInstance = db
 
 	})
 
-	return mysqlInstance.mysql
+	return mysqlInstance
 }
 
 func gormConfig(debug bool) *gorm.Config {

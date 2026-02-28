@@ -3,6 +3,7 @@ package config
 type LocalConfig struct {
 	DatabaseDebug      bool   `env:"DATABASE_DEBUG" envDefault:"false"`
 	ElasticsearchDebug bool   `env:"ES_DEBUG" envDefault:"false"`
+	RedisDebug         bool   `env:"REDIS_DEBUG" envDefault:"false"`
 	SentryDsn          string `env:"SENTRY_DSN"`
 	LogLevel           string `env:"LOG_LEVEL" envDefault:"INFO"`
 
@@ -17,6 +18,9 @@ type LocalConfig struct {
 
 	// elasticsearch config
 	EsConfig EsConfig
+
+	// redis config
+	RedisConfig RedisConfig
 
 	// logger config
 	LoggerConfig LoggerConfig
@@ -41,6 +45,18 @@ type MySQLConfig struct {
 	MySQLSetMaxOpenConns      int `env:"MAX_OPEN_CONNS_MYSQL" envDefault:"10"`
 	MySQLSetMaxConnLifetime   int `env:"CONN_MAX_LIFETIME_MYSQL" envDefault:"60"`
 	MySQLSetMaxIdleConnection int `env:"MAX_IDLE_CONNECTION_MYSQL" envDefault:"5"`
+}
+
+type RedisConfig struct {
+	RedisHost     string `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort     string `env:"REDIS_PORT" envDefault:"6379"`
+	RedisUsername string `env:"REDIS_USERNAME"`
+	RedisPassword string `env:"REDIS_PASSWORD"`
+	RedisDB       int    `env:"REDIS_DB"`
+
+	RedisPoolSize        int `env:"REDIS_POOL_SIZE" envDefault:"10"`
+	RedisMinIdleConn     int `env:"REDIS_MIN_IDLE_CONN" envDefault:"2"`
+	RedisConnMaxIdleTime int `env:"REDIS_CONN_MAX_IDLE_TIME" envDefault:"600"` // seconds (10 min)
 }
 
 type LoggerConfig struct {
