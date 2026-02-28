@@ -6,10 +6,12 @@ import (
 	"orchid-starter/config"
 	"orchid-starter/infrastructure/elastic"
 	"orchid-starter/infrastructure/mysql"
+	"orchid-starter/infrastructure/redis"
 	"orchid-starter/internal/clients"
 	"orchid-starter/internal/common"
 
 	"github.com/elastic/go-elasticsearch/v9"
+	redisV9 "github.com/redis/go-redis/v9"
 	"github.com/yudhiana/logos"
 	"gorm.io/gorm"
 )
@@ -27,8 +29,9 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 	logger.Info("Initializing dependency injection container...")
 
 	var (
-		mysqlDB  *gorm.DB
-		esClient *elasticsearch.Client
+		mysqlDB     *gorm.DB
+		esClient    *elasticsearch.Client
+		redisClient *redisV9.Client
 	)
 
 	// Initialize MySQL connection
@@ -50,6 +53,15 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 		esClient = elastic.NewESConnection(cfg)
 		if esClient == nil {
 			return nil, fmt.Errorf("failed to initialize Elasticsearch connection")
+		}
+	}
+
+	if common.GetBoolEnv("USE_MOCK_CONNECTION", true) {
+		redisClient, _ = redis.GetMockRedisConnection()
+	} else {
+		redisClient = redis.GetRedisClient(cfg)
+		if redisClient == nil {
+			return nil, fmt.Errorf("failed to initialize Redis connection")
 		}
 	}
 
