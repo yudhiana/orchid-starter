@@ -71,10 +71,10 @@ func GetMySQLConnection(cfg *config.LocalConfig) *gorm.DB {
 			panic(err)
 		}
 
-		sqlDB.SetConnMaxIdleTime(time.Second * time.Duration(cfg.MySQLConfig.MySQLSetMaxIdleConnection))
-		sqlDB.SetConnMaxLifetime(time.Second * time.Duration(cfg.MySQLConfig.MySQLSetMaxConnLifetime))
-		sqlDB.SetMaxIdleConns(cfg.MySQLConfig.MySQLSetMaxIdleConns)
-		sqlDB.SetMaxOpenConns(cfg.MySQLConfig.MySQLSetMaxOpenConns)
+		sqlDB.SetConnMaxIdleTime(time.Second * time.Duration(cfg.MySQLConfig.MySQLMaxIdleConnection))
+		sqlDB.SetConnMaxLifetime(time.Second * time.Duration(cfg.MySQLConfig.MySQLMaxConnLifetime))
+		sqlDB.SetMaxIdleConns(cfg.MySQLConfig.MySQLMaxIdleConns)
+		sqlDB.SetMaxOpenConns(cfg.MySQLConfig.MySQLMaxOpenConns)
 
 		mysqlInstance = db
 

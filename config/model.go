@@ -35,16 +35,16 @@ type EsConfig struct {
 }
 
 type MySQLConfig struct {
-	MySQLHost         string `env:"DATABASE_HOST,required"`
-	MySQLPort         string `env:"DATABASE_PORT,required"`
-	MySQLDatabaseName string `env:"DATABASE_NAME,required"`
-	MySQLUsername     string `env:"USERNAME_DB,required"`
-	MySQLPassword     string `env:"PASSWORD_DB,required"`
+	MySQLHost         string `env:"MYSQL_DATABASE_HOST,required"`
+	MySQLPort         string `env:"MYSQL_DATABASE_PORT,required"`
+	MySQLDatabaseName string `env:"MYSQL_DATABASE_NAME,required"`
+	MySQLUsername     string `env:"MYSQL_USERNAME,required"`
+	MySQLPassword     string `env:"MYSQL_PASSWORD,required"`
 
-	MySQLSetMaxIdleConns      int `env:"MAX_IDLE_CONNS_MYSQL" envDefault:"5"`
-	MySQLSetMaxOpenConns      int `env:"MAX_OPEN_CONNS_MYSQL" envDefault:"10"`
-	MySQLSetMaxConnLifetime   int `env:"CONN_MAX_LIFETIME_MYSQL" envDefault:"60"`
-	MySQLSetMaxIdleConnection int `env:"MAX_IDLE_CONNECTION_MYSQL" envDefault:"5"`
+	MySQLMaxIdleConns      int `env:"MYSQL_MAX_IDLE_CONNS" envDefault:"5"`
+	MySQLMaxOpenConns      int `env:"MYSQL_MAX_OPEN_CONNS" envDefault:"10"`
+	MySQLMaxConnLifetime   int `env:"MYSQL_CONN_MAX_LIFETIME" envDefault:"60"`
+	MySQLMaxIdleConnection int `env:"MYSQL_MAX_IDLE_CONNECTION" envDefault:"5"`
 }
 
 type RedisConfig struct {
