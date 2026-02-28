@@ -25,11 +25,11 @@ func TestGenerateRandomString(t *testing.T) {
 	}
 }
 
-func TestHmacShaKey(t *testing.T) {
+func TestDecodeBase64Key(t *testing.T) {
 	raw := []byte("some-secret")
 	enc := base64.StdEncoding.EncodeToString(raw)
 
-	got, err := HmacShaKey(enc)
+	got, err := DecodeBase64Key(enc)
 	if err != nil {
 		t.Fatalf("expected no error for valid base64, got %v", err)
 	}
@@ -37,15 +37,15 @@ func TestHmacShaKey(t *testing.T) {
 		t.Errorf("decoded bytes mismatch: got %q, want %q", got, raw)
 	}
 
-	_, err = HmacShaKey("not-base64-!!")
+	_, err = DecodeBase64Key("not-base64-!!")
 	if err == nil {
 		t.Error("expected error for invalid base64 input")
 	}
 }
 
-func TestHmacShaEncode(t *testing.T) {
+func TestEncodeBase64Key(t *testing.T) {
 	raw := "hello-world"
-	enc := HmacShaEncode([]byte(raw))
+	enc := EncodeBase64Key([]byte(raw))
 	if enc == "" {
 		t.Fatal("expected non-empty encoded string")
 	}
@@ -59,8 +59,8 @@ func TestHmacShaEncode(t *testing.T) {
 	}
 }
 
-func TestHmacShaKey_InvalidBase64(t *testing.T) {
-	_, err := HmacShaKey("not-valid-base64!!!")
+func TestDecodeBase64Key_InvalidBase64(t *testing.T) {
+	_, err := DecodeBase64Key("not-valid-base64!!!")
 	if err == nil {
 		t.Fatal("expected error for invalid base64")
 	}

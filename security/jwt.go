@@ -31,7 +31,7 @@ func (c *AppClaim) GenerateJwtToken(method jwt.SigningMethod, secretKey string, 
 		option(jwtToken)
 	}
 
-	secretKeyBytes, errDecode := HmacShaKey(secretKey)
+	secretKeyBytes, errDecode := DecodeBase64Key(secretKey)
 	if errDecode != nil {
 		err = fmt.Errorf("failed to decode secret key Error: %w", errDecode)
 		return
@@ -49,7 +49,7 @@ func ValidateJWTToken(tokenJWT string, secretKey string, method jwt.SigningMetho
 		} else if method != nil && signMethod != method {
 			return nil, ErrInvalidSigningMethod
 		}
-		return HmacShaKey(secretKey)
+		return DecodeBase64Key(secretKey)
 	})
 
 	if errJwt != nil {

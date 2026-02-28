@@ -33,7 +33,7 @@ func GenerateRandomString() string {
 	return string(combined)
 }
 
-func HmacShaKey(key string) (shaKey []byte, err error) {
+func DecodeBase64Key(key string) (shaKey []byte, err error) {
 	shaKey, errDecode := base64.StdEncoding.DecodeString(key)
 	if errDecode != nil {
 		err = fmt.Errorf("failed to decode key secret Error: %w", errDecode)
@@ -42,7 +42,7 @@ func HmacShaKey(key string) (shaKey []byte, err error) {
 	return
 }
 
-func HmacShaEncode(raw []byte) string {
+func EncodeBase64Key(raw []byte) string {
 	return base64.StdEncoding.EncodeToString(raw)
 }
 
