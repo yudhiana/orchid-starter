@@ -1,10 +1,16 @@
 package server
 
 import (
+	"context"
+	"log"
 	"net/http"
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap"
 	"orchid-starter/internal/bootstrap/server/applications/handler"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/yudhiana/logos"
@@ -56,9 +62,42 @@ func (s *Server) setupRoutes(container *bootstrap.Container) {
 func (s *Server) Run() error {
 	// Log version and server info
 	cfg := s.cfg
-	logos.NewLogger().Info("Version", "version", cfg.AppVersion, "host", cfg.AppHost, "port", cfg.AppPort)
+	logos.NewLogger().Info(
+		"Server starting",
+		"version", cfg.AppVersion,
+		"host", cfg.AppHost,
+		"port", cfg.AppPort,
+	)
 
 	// Start server
 	address := cfg.AppHost + ":" + cfg.AppPort
-	return http.ListenAndServe(address, s.app)
+	srv := &http.Server{
+		Addr:    address,
+		Handler: s.app,
+	}
+
+	go func() {
+		// Wait for interrupt signal
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
+
+		logos.NewLogger().Info("🔴Shutting down server...")
+
+		// Graceful shutdown timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+
+		if err := srv.Shutdown(ctx); err != nil {
+			logos.NewLogger().Error("🔴Forced shutdown", "err", err)
+		}
+
+		logos.NewLogger().Info("🔴Server exited properly")
+	}()
+
+	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatal(err)
+	}
+
+	return nil
 }

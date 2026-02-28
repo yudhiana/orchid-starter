@@ -108,7 +108,7 @@ func testConnections(mysqlDB *gorm.DB, esClient *elasticsearch.Client) error {
 // Close gracefully closes all connections
 func (di *DirectInjection) Close() error {
 	logger := logos.NewLogger()
-	logger.Info("Closing dependency injection resources...")
+	logger.Info("🔴Closing dependency injection resources...")
 
 	var errors []error
 
@@ -119,7 +119,7 @@ func (di *DirectInjection) Close() error {
 		} else if err := sqlDB.Close(); err != nil {
 			errors = append(errors, fmt.Errorf("failed to close MySQL connection: %w", err))
 		} else {
-			logger.Info("MySQL connection closed")
+			logger.Info("🔴MySQL connection closed")
 		}
 	}
 
@@ -129,19 +129,19 @@ func (di *DirectInjection) Close() error {
 		if err := di.Redis.Close(); err != nil {
 			errors = append(errors, fmt.Errorf("failed to close redis connection: %w", err))
 		} else {
-			logger.Info("Redis connection closed")
+			logger.Info("🔴Redis connection closed")
 		}
 	}
 
 	// Elasticsearch client doesn't need explicit closing in most cases
 	// but we can add custom cleanup logic here if needed
-	logger.Info("Elasticsearch client cleanup completed")
+	logger.Info("🔴Elasticsearch client cleanup completed")
 
 	if len(errors) > 0 {
 		return fmt.Errorf("DI cleanup completed with errors: %v", errors)
 	}
 
-	logger.Info("Dependency injection resources closed successfully")
+	logger.Info("🔴Dependency injection resources closed successfully")
 	return nil
 }
 

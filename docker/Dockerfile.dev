@@ -23,7 +23,7 @@ RUN git config \
 	"https://github.com"
 
 
-RUN go install github.com/air-verse/air@v1.62.0
+RUN go install github.com/cespare/reflex@latest
 
 WORKDIR /app/${APP_NAME}
 
@@ -31,4 +31,4 @@ COPY ./ /app/${APP_NAME}
 
 RUN go mod download
 
-ENTRYPOINT [ "air", "-c", ".air.toml" ]
+CMD ["reflex", "-r", "\\.go$", "-s", "--", "go", "run", "/app/orchid-starter/cmd/api/main.go"]

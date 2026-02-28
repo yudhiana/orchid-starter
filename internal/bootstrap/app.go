@@ -56,7 +56,7 @@ func NewContainer() (*Container, error) {
 // Close gracefully shuts down the container and its resources
 func (c *Container) Close() error {
 	logger := logos.NewLogger()
-	logger.Info("Shutting down application container...")
+	logger.Info("🔴Shutting down application container...")
 
 	var errors []error
 
@@ -69,7 +69,7 @@ func (c *Container) Close() error {
 		return fmt.Errorf("container shutdown completed with errors: %v", errors)
 	}
 
-	logger.Info("Application container shut down successfully")
+	logger.Info("🔴Application container shut down successfully")
 	return nil
 }
 

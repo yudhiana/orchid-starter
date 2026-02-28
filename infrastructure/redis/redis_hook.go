@@ -18,6 +18,11 @@ func NewRedisHook() *RedisHook {
 
 func (h *RedisHook) ProcessHook(next redisV9.ProcessHook) redisV9.ProcessHook {
 	return func(ctx context.Context, cmd redisV9.Cmder) error {
+		// Ignore internal go-redis maintenance command
+		if cmd.Name() == "client" {
+			return next(ctx, cmd)
+		}
+
 		log.Println("REDIS COMMAND > ", cmd.String())
 		err := next(ctx, cmd)
 		if err != nil {
