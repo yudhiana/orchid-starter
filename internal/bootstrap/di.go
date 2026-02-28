@@ -19,6 +19,7 @@ import (
 type DirectInjection struct {
 	MySQL  *gorm.DB
 	ES     *elasticsearch.Client
+	Redis  *redisV9.Client
 	Client *clients.Client
 	Log    *logos.LogEntry
 }
@@ -75,6 +76,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 	di := &DirectInjection{
 		MySQL:  mysqlDB,
 		ES:     esClient,
+		Redis:  redisClient,
 		Client: clients.NewClient(),
 		Log:    logos.NewLogger(),
 	}
@@ -118,6 +120,16 @@ func (di *DirectInjection) Close() error {
 			errors = append(errors, fmt.Errorf("failed to close MySQL connection: %w", err))
 		} else {
 			logger.Info("MySQL connection closed")
+		}
+	}
+
+	// Close Redis connection
+
+	if di.Redis != nil {
+		if err := di.Redis.Close(); err != nil {
+			errors = append(errors, fmt.Errorf("failed to close redis connection: %w", err))
+		} else {
+			logger.Info("Redis connection closed")
 		}
 	}
 
