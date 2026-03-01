@@ -1,7 +1,9 @@
 package bootstrap
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"orchid-starter/config"
 	"orchid-starter/infrastructure/elastic"
@@ -69,7 +71,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 	logger.Info("Elasticsearch connection established")
 
 	// Test connections
-	if err := testConnections(mysqlDB, esClient); err != nil {
+	if err := testConnections(mysqlDB, redisClient, esClient); err != nil {
 		return nil, fmt.Errorf("connection test failed: %w", err)
 	}
 
@@ -86,7 +88,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 }
 
 // testConnections verifies that all connections are working
-func testConnections(mysqlDB *gorm.DB, esClient *elasticsearch.Client) error {
+func testConnections(mysqlDB *gorm.DB, redisClient *redisV9.Client, esClient *elasticsearch.Client) error {
 	logger := logos.NewLogger()
 
 	// Test MySQL connection
@@ -94,6 +96,16 @@ func testConnections(mysqlDB *gorm.DB, esClient *elasticsearch.Client) error {
 		return fmt.Errorf("failed to get MySQL database instance: %w", err)
 	} else if err := sqlDB.Ping(); err != nil {
 		return fmt.Errorf("MySQL ping failed: %w", err)
+	}
+
+	// Test Redis connection
+	if redisClient == nil {
+		return fmt.Errorf("redis client is nil")
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	if err := redisClient.Ping(ctx).Err(); err != nil {
+		return fmt.Errorf("redis ping failed: %w", err)
 	}
 
 	// Test Elasticsearch connection
