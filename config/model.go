@@ -1,5 +1,7 @@
 package config
 
+import "fmt"
+
 type LocalConfig struct {
 	DatabaseDebug      bool   `env:"DATABASE_DEBUG" envDefault:"false"`
 	ElasticsearchDebug bool   `env:"ES_DEBUG" envDefault:"false"`
@@ -47,6 +49,18 @@ type MySQLConfig struct {
 	MySQLMaxIdleConnection int `env:"MYSQL_MAX_IDLE_CONNECTION" envDefault:"5"`
 }
 
+func (m MySQLConfig) DSN() string {
+	tmpl := "%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True&loc=Local"
+	return fmt.Sprintf(
+		tmpl,
+		m.MySQLUsername,
+		m.MySQLPassword,
+		m.MySQLHost,
+		m.MySQLPort,
+		m.MySQLDatabaseName,
+	)
+}
+
 type RedisConfig struct {
 	RedisHost     string `env:"REDIS_HOST" envDefault:"localhost"`
 	RedisPort     string `env:"REDIS_PORT" envDefault:"6379"`
@@ -57,6 +71,27 @@ type RedisConfig struct {
 	RedisPoolSize        int `env:"REDIS_POOL_SIZE" envDefault:"10"`
 	RedisMinIdleConn     int `env:"REDIS_MIN_IDLE_CONN" envDefault:"2"`
 	RedisConnMaxIdleTime int `env:"REDIS_CONN_MAX_IDLE_TIME" envDefault:"600"` // seconds (10 min)
+}
+
+func (rds RedisConfig) Addr() string {
+	return fmt.Sprintf("%s:%s", rds.RedisHost, rds.RedisPort)
+}
+
+type RabbitMQConfig struct {
+	RabbitMQHost     string `env:"RABBITMQ_HOST" envDefault:"rabbitmq"`
+	RabbitMQPort     string `env:"RABBITMQ_PORT" envDefault:"5672"`
+	RabbitMQUser     string `env:"RABBITMQ_USER" envDefault:"guest"`
+	RabbitMQPassword string `env:"RABBITMQ_PASSWORD" envDefault:"guest"`
+}
+
+func (r RabbitMQConfig) AmqpURI() string {
+	return fmt.Sprintf(
+		"amqp://%s:%s@%s:%s/",
+		r.RabbitMQUser,
+		r.RabbitMQPassword,
+		r.RabbitMQHost,
+		r.RabbitMQPort,
+	)
 }
 
 type LoggerConfig struct {

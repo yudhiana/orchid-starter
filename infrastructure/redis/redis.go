@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"orchid-starter/config"
-	"orchid-starter/internal/common"
 
 	"github.com/go-redis/redismock/v9"
 	redisV9 "github.com/redis/go-redis/v9"
@@ -20,18 +19,8 @@ var redisOnce sync.Once
 // application configuration.  The call is safe for concurrent use.
 func GetRedisClient(cfg *config.LocalConfig) *redisV9.Client {
 	redisOnce.Do(func() {
-		// build address string just like template used for MySQL
-		addr, err := common.Render(
-			"{{host}}:{{port}}",
-			map[string]any{
-				"host": cfg.RedisConfig.RedisHost,
-				"port": cfg.RedisConfig.RedisPort,
-			},
-		)
-		if err != nil {
-			panic(err)
-		}
 
+		addr := cfg.RedisConfig.Addr()
 		logos.NewLogger().Info("Initialize Redis connection", "addr", addr)
 
 		// pooled connection configuration (tune PoolSize/MinIdleConns as needed)

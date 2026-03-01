@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"orchid-starter/config"
-	"orchid-starter/internal/common"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -43,24 +42,11 @@ func getLogger(debug bool) logger.Interface {
 func GetMySQLConnection(cfg *config.LocalConfig) *gorm.DB {
 	mysqlOnce.Do(func() {
 
-		tmpl := "{{username}}:{{password}}@tcp({{host}}:{{port}})/{{db_name}}?charset=utf8mb4&collation=utf8mb4_unicode_ci&parseTime=True&loc=Local"
-
 		//setup connection to database
-		URI, err := common.Render(tmpl, map[string]any{
-			"username": cfg.MySQLConfig.MySQLUsername,
-			"password": cfg.MySQLConfig.MySQLPassword,
-			"host":     cfg.MySQLConfig.MySQLHost,
-			"port":     cfg.MySQLConfig.MySQLPort,
-			"db_name":  cfg.MySQLConfig.MySQLDatabaseName,
-		})
-
-		if err != nil {
-			panic(err)
-		}
-
-		logos.NewLogger().Info("Initialize MySQL connection", "URI", URI)
+		DSN := cfg.MySQLConfig.DSN()
+		logos.NewLogger().Info("Initialize MySQL connection", "DSN", DSN)
 		db, err := gorm.Open(mysql.New(mysql.Config{
-			DSN: URI,
+			DSN: DSN,
 		}), gormConfig(cfg.DatabaseDebug))
 		if err != nil {
 			panic(err)
