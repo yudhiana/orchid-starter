@@ -2,11 +2,9 @@ package rabbitmq
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sync"
-	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
@@ -104,8 +102,8 @@ func (p *Publisher) ensureConnection() error {
 	return p.connect()
 }
 
-// Publish marshals msg to JSON and sends it with the given routing key.
-func (p *Publisher) Publish(ctx context.Context, routingKey string, msg any) error {
+// Publish sends it with the given routing key.
+func (p *Publisher) Publish(ctx context.Context, routingKey string, msg amqp.Publishing) error {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -123,23 +121,13 @@ func (p *Publisher) Publish(ctx context.Context, routingKey string, msg any) err
 		return err
 	}
 
-	body, err := json.Marshal(msg)
-	if err != nil {
-		return fmt.Errorf("json marshal error: %w", err)
-	}
-
-	if err = p.channel.PublishWithContext(
+	if err := p.channel.PublishWithContext(
 		ctx,
 		p.exchange, // exchange
 		routingKey, // routing key
 		false,      // mandatory
 		false,      // immediate
-		amqp.Publishing{
-			ContentType:  "application/json",
-			Body:         body,
-			DeliveryMode: amqp.Persistent,
-			Timestamp:    time.Now().UTC(),
-		},
+		msg,
 	); err != nil {
 		return fmt.Errorf("publish error: %w", err)
 	}
