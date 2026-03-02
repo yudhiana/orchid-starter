@@ -79,7 +79,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 	}
 
 	// Initialize RabbitMQ connection
-	publisher = rabbitmq.NewPublisher(cfg.RabbitMQConfig.AmqpURI(), "orchid-event", rabbitmq.Fanout)
+	publisher = rabbitmq.NewPublisher(cfg.RabbitMQConfig.AmqpURI())
 
 	di := &DirectInjection{
 		MySQL:     mysqlDB,
@@ -149,6 +149,14 @@ func (di *DirectInjection) Close() error {
 			errors = append(errors, fmt.Errorf("failed to close redis connection: %w", err))
 		} else {
 			logger.Info("🔴Redis connection closed")
+		}
+	}
+
+	if di.Publisher != nil {
+		if err := di.Publisher.Close(); err != nil {
+			errors = append(errors, fmt.Errorf("failed to closing rabitmq connection: %w", err))
+		} else {
+			logger.Info("🔴RabbitMQ connection closed")
 		}
 	}
 

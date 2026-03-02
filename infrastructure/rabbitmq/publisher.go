@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	amqp "github.com/rabbitmq/amqp091-go"
+	"github.com/yudhiana/logos"
 )
 
 var (
@@ -30,17 +31,14 @@ type Publisher struct {
 	mu sync.Mutex
 	wg sync.WaitGroup
 
-	exchange string
-	uri      string
-
-	kind   Kind
+	uri    string
 	closed bool
 }
 
 // NewPublisher opens a connection and channel, declares the exchange and
 // returns a publisher instance. exchangeType is typically "direct"
 // / "topic" / "fanout" etc.
-func NewPublisher(amqpURI, exchange string, exchangeType Kind) *Publisher {
+func NewPublisher(amqpURI string) *Publisher {
 	publisherMu.Lock()
 	defer publisherMu.Unlock()
 
@@ -49,9 +47,7 @@ func NewPublisher(amqpURI, exchange string, exchangeType Kind) *Publisher {
 	}
 
 	pub := &Publisher{
-		uri:      amqpURI,
-		exchange: exchange,
-		kind:     exchangeType,
+		uri: amqpURI,
 	}
 
 	if err := pub.connect(); err != nil {
@@ -64,6 +60,7 @@ func NewPublisher(amqpURI, exchange string, exchangeType Kind) *Publisher {
 
 func (p *Publisher) connect() error {
 	conn, err := amqp.Dial(p.uri)
+	logos.NewLogger().Info("dialing", "URI", p.uri)
 	if err != nil {
 		return fmt.Errorf("dial connection error: %w", err)
 	}
@@ -72,20 +69,6 @@ func (p *Publisher) connect() error {
 	if err != nil {
 		conn.Close()
 		return fmt.Errorf("getting amqp channel error: %w", err)
-	}
-
-	if err = ch.ExchangeDeclare(
-		p.exchange,     // name
-		string(p.kind), // type
-		true,           // durable
-		false,          // delete when complete
-		false,          // internal
-		false,          // noWait
-		nil,            // arguments
-	); err != nil {
-		ch.Close()
-		conn.Close()
-		return fmt.Errorf("declare exchange error: %w", err)
 	}
 
 	p.conn = conn
@@ -103,7 +86,7 @@ func (p *Publisher) ensureConnection() error {
 }
 
 // Publish sends it with the given routing key.
-func (p *Publisher) Publish(ctx context.Context, routingKey string, msg amqp.Publishing) error {
+func (p *Publisher) Publish(ctx context.Context, exchange, routingKey string, kind Kind, msg amqp.Publishing) error {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -121,9 +104,23 @@ func (p *Publisher) Publish(ctx context.Context, routingKey string, msg amqp.Pub
 		return err
 	}
 
+	if err := p.channel.ExchangeDeclare(
+		exchange,     // name
+		string(kind), // type
+		true,         // durable
+		false,        // delete when complete
+		false,        // internal
+		false,        // noWait
+		nil,          // arguments
+	); err != nil {
+		p.channel.Close()
+		p.conn.Close()
+		return fmt.Errorf("declare exchange error: %w", err)
+	}
+
 	if err := p.channel.PublishWithContext(
 		ctx,
-		p.exchange, // exchange
+		exchange,   // exchange
 		routingKey, // routing key
 		false,      // mandatory
 		false,      // immediate
@@ -132,6 +129,56 @@ func (p *Publisher) Publish(ctx context.Context, routingKey string, msg amqp.Pub
 		return fmt.Errorf("publish error: %w", err)
 	}
 
+	logos.NewLogger().Info("publishing", "message", msg)
+	return nil
+}
+
+// Publish sends it with the given routing key.
+func (p *Publisher) PublishQueue(ctx context.Context, queue string, msg amqp.Publishing) error {
+	p.mu.Lock()
+	if p.closed {
+		p.mu.Unlock()
+		return errors.New("publisher already closed")
+	}
+
+	p.wg.Add(1)
+	p.mu.Unlock()
+	defer p.wg.Done()
+
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
+	if err := p.ensureConnection(); err != nil {
+		return err
+	}
+
+	_, err := p.channel.QueueDeclare(
+		queue, // name
+		true,  // durable
+		false, // delete when complete
+		false, // internal
+		false, // noWait
+		nil,   // arguments
+	)
+
+	if err != nil {
+		p.channel.Close()
+		p.conn.Close()
+		return fmt.Errorf("declare exchange error: %w", err)
+	}
+
+	if err := p.channel.PublishWithContext(
+		ctx,
+		"", // exchange
+		queue,
+		false, // mandatory
+		false, // immediate
+		msg,
+	); err != nil {
+		return fmt.Errorf("publish error: %w", err)
+	}
+
+	logos.NewLogger().Info("publishing", "message", msg)
 	return nil
 }
 
