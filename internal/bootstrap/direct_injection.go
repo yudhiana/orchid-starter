@@ -8,6 +8,7 @@ import (
 	"orchid-starter/config"
 	"orchid-starter/infrastructure/elastic"
 	"orchid-starter/infrastructure/mysql"
+	"orchid-starter/infrastructure/rabbitmq"
 	"orchid-starter/infrastructure/redis"
 	"orchid-starter/internal/clients"
 	"orchid-starter/internal/common"
@@ -19,11 +20,12 @@ import (
 )
 
 type DirectInjection struct {
-	MySQL  *gorm.DB
-	ES     *elasticsearch.Client
-	Redis  *redisV9.Client
-	Client *clients.Client
-	Log    *logos.LogEntry
+	MySQL     *gorm.DB
+	ES        *elasticsearch.Client
+	Redis     *redisV9.Client
+	Client    *clients.Client
+	Publisher *rabbitmq.Publisher
+	Log       *logos.LogEntry
 }
 
 // NewDirectInjection creates a new dependency injection container with proper error handling
@@ -35,6 +37,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 		mysqlDB     *gorm.DB
 		esClient    *elasticsearch.Client
 		redisClient *redisV9.Client
+		publisher   *rabbitmq.Publisher
 	)
 
 	// Initialize MySQL connection
@@ -75,12 +78,16 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 		return nil, fmt.Errorf("connection test failed: %w", err)
 	}
 
+	// Initialize RabbitMQ connection
+	publisher = rabbitmq.NewPublisher(cfg.RabbitMQConfig.AmqpURI(), "orchid-event", rabbitmq.Fanout)
+
 	di := &DirectInjection{
-		MySQL:  mysqlDB,
-		ES:     esClient,
-		Redis:  redisClient,
-		Client: clients.NewClient(),
-		Log:    logos.NewLogger(),
+		MySQL:     mysqlDB,
+		ES:        esClient,
+		Redis:     redisClient,
+		Publisher: publisher,
+		Client:    clients.NewClient(),
+		Log:       logos.NewLogger(),
 	}
 
 	logger.Info("Dependency injection container initialized successfully")

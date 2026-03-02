@@ -40,12 +40,12 @@ type Publisher struct {
 // NewPublisher opens a connection and channel, declares the exchange and
 // returns a publisher instance. exchangeType is typically "direct"
 // / "topic" / "fanout" etc.
-func NewPublisher(amqpURI, exchange string, exchangeType Kind) (*Publisher, error) {
+func NewPublisher(amqpURI, exchange string, exchangeType Kind) *Publisher {
 	publisherMu.Lock()
 	defer publisherMu.Unlock()
 
 	if publisherInstance != nil {
-		return publisherInstance, nil
+		return publisherInstance
 	}
 
 	pub := &Publisher{
@@ -55,11 +55,11 @@ func NewPublisher(amqpURI, exchange string, exchangeType Kind) (*Publisher, erro
 	}
 
 	if err := pub.connect(); err != nil {
-		return nil, err
+		panic(err)
 	}
 
 	publisherInstance = pub
-	return publisherInstance, nil
+	return publisherInstance
 }
 
 func (p *Publisher) connect() error {

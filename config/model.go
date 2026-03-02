@@ -24,6 +24,9 @@ type LocalConfig struct {
 	// redis config
 	RedisConfig RedisConfig
 
+	// rabbimq config
+	RabbitMQConfig RabbitMQConfig
+
 	// logger config
 	LoggerConfig LoggerConfig
 }
