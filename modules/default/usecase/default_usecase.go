@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"orchid-starter/internal/clients"
+	"orchid-starter/modules/default/delivery/event/publisher"
 	"orchid-starter/modules/default/repository"
 	modelUsecase "orchid-starter/modules/default/usecase/models"
 
@@ -14,13 +15,15 @@ type defaultUsecase struct {
 	db         *gorm.DB // use for transaction db .. NOTE : don't use for query!
 	repository repository.DefaultRepositoryInterface
 	client     *clients.Client
+	publishing *publisher.EventPublisher
 }
 
-func NewDefaultUsecase(db *gorm.DB, r repository.DefaultRepositoryInterface, client *clients.Client) DefaultUsecaseInterface {
+func NewDefaultUsecase(db *gorm.DB, r repository.DefaultRepositoryInterface, client *clients.Client, pub *publisher.EventPublisher) DefaultUsecaseInterface {
 	return &defaultUsecase{
 		db:         db,
 		repository: r,
 		client:     client,
+		publishing: pub,
 	}
 }
 

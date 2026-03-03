@@ -23,7 +23,7 @@ func (r *queryResolver) Welcome(ctx context.Context) (*model.ResponseWelcome, er
 	defaultRepository := repository.NewDefaultRepository(db, esClient)
 
 	// Initialize usecase with client access
-	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient)
+	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient, r.DI.GetPublisher())
 	return &model.ResponseWelcome{
 		Message: uc.GetWelcome(ctx).Message,
 	}, nil

@@ -7,6 +7,7 @@ import (
 	"orchid-starter/modules/default/usecase"
 
 	v2 "orchid-starter/modules/default/delivery/api/rest/v2"
+	"orchid-starter/modules/default/delivery/event/publisher"
 
 	"github.com/go-chi/chi/v5"
 )
@@ -18,8 +19,11 @@ func NewDefaultHandler(app chi.Router, di *bootstrap.DirectInjection) {
 	// Get the comprehensive client for all API operations
 	client := di.GetClient()
 
+	// define event publisher
+	pub := publisher.NewEventPublisher(di.GetPublisher())
+
 	// Initialize usecase with client access
-	defaultUseCase := usecase.NewDefaultUsecase(di.GetMySQL(), defaultRepository, client)
+	defaultUseCase := usecase.NewDefaultUsecase(di.GetMySQL(), defaultRepository, client, pub)
 	defaultV2 := v2.NewDefaultHandler(defaultUseCase)
 
 	app.Get("/", defaultV2.Welcome)

@@ -190,3 +190,7 @@ func (di *DirectInjection) GetElasticsearch() *elasticsearch.Client {
 func (di *DirectInjection) GetClient() *clients.Client {
 	return di.Client
 }
+
+func (di *DirectInjection) GetPublisher() rabbitmq.PublisherInterface {
+	return di.Publisher
+}
