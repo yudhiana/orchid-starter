@@ -51,6 +51,22 @@ func (uc *defaultUsecase) GetWelcome(ctx context.Context) (result modelUsecase.G
 			})
 	*/
 
+	/*
+		Example use for event publisher!
+			uc.publishing.PublishDefaultCreated(context.Background(), "orchid-exchange", "orchid.default.created", rabbitmq.Fanout, rabbitmq.Publishing{
+				ContentType: "application/json",
+				Type:        "orchid-default-created",
+				AppId:       os.Getenv("APP_NAME"),
+				Headers: map[string]any{
+					"request-id": common.GetRequestIDFromContext(ctx),
+				},
+				MessageId:    uuid.NewString(),
+				Timestamp:    time.Now().UTC(),
+				DeliveryMode: rabbitmq.Persistent,
+				Body:         []byte(`{"message": "Default created event published"}`),
+			})
+
+	*/
 	return modelUsecase.GetWelcome{
 		Message: uc.repository.GetWelcome(ctx).Message,
 	}

@@ -15,7 +15,13 @@ var (
 	publisherMu       sync.Mutex
 )
 
+const (
+	Transient  uint8 = 1
+	Persistent uint8 = 2
+)
+
 type Publishing amqp.Publishing
+type HeadersTable amqp.Table
 
 type Kind string
 
