@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"sync"
 	"testing"
-
-	"github.com/rabbitmq/amqp091-go"
+	"time"
 )
 
 func TestPublisherQueueRace(t *testing.T) {
@@ -18,8 +17,9 @@ func TestPublisherQueueRace(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			err := pub.PublishQueue(context.Background(), "orchid-queue", amqp091.Publishing{
-				Body: []byte(fmt.Sprintf("index - %d", i)),
+			err := pub.PublishQueue(context.Background(), "orchid-queue", Publishing{
+				Body:      []byte(fmt.Sprintf("index - %d", i)),
+				Timestamp: time.Now().UTC(),
 			})
 
 			if err != nil {
@@ -40,8 +40,9 @@ func TestPublisherRace(t *testing.T) {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			err := pub.Publish(context.Background(), "orchid-event", "", Fanout, amqp091.Publishing{
-				Body: []byte(fmt.Sprintf("index - %d", i)),
+			err := pub.Publish(context.Background(), "orchid-event", "", Fanout, Publishing{
+				Body:      []byte(fmt.Sprintf("index - %d", i)),
+				Timestamp: time.Now().UTC(),
 			})
 
 			if err != nil {

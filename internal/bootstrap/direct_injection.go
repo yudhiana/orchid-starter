@@ -24,7 +24,7 @@ type DirectInjection struct {
 	ES        *elasticsearch.Client
 	Redis     *redisV9.Client
 	Client    *clients.Client
-	Publisher *rabbitmq.Publisher
+	Publisher rabbitmq.PublisherInterface
 	Log       *logos.LogEntry
 }
 
@@ -37,7 +37,7 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 		mysqlDB     *gorm.DB
 		esClient    *elasticsearch.Client
 		redisClient *redisV9.Client
-		publisher   *rabbitmq.Publisher
+		publisher   rabbitmq.PublisherInterface
 	)
 
 	// Initialize MySQL connection
@@ -79,7 +79,11 @@ func NewDirectInjection(cfg *config.LocalConfig) (*DirectInjection, error) {
 	}
 
 	// Initialize RabbitMQ connection
-	publisher = rabbitmq.NewPublisher(cfg.RabbitMQConfig.AmqpURI())
+	if common.GetBoolEnv("USE_MOCK_CONNECTION", true) {
+		publisher = rabbitmq.NewMockPublisher()
+	} else {
+		publisher = rabbitmq.NewPublisher(cfg.RabbitMQConfig.AmqpURI())
+	}
 
 	di := &DirectInjection{
 		MySQL:     mysqlDB,

@@ -15,6 +15,8 @@ var (
 	publisherMu       sync.Mutex
 )
 
+type Publishing amqp.Publishing
+
 type Kind string
 
 const (
@@ -35,10 +37,16 @@ type Publisher struct {
 	closed bool
 }
 
+type PublisherInterface interface {
+	Publish(ctx context.Context, exchange, routingKey string, kind Kind, msg Publishing) error
+	PublishQueue(ctx context.Context, queue string, msg Publishing) error
+	Close() error
+}
+
 // NewPublisher opens a connection and channel, declares the exchange and
 // returns a publisher instance. exchangeType is typically "direct"
 // / "topic" / "fanout" etc.
-func NewPublisher(amqpURI string) *Publisher {
+func NewPublisher(amqpURI string) PublisherInterface {
 	publisherMu.Lock()
 	defer publisherMu.Unlock()
 
@@ -86,7 +94,7 @@ func (p *Publisher) ensureConnection() error {
 }
 
 // Publish sends it with the given routing key.
-func (p *Publisher) Publish(ctx context.Context, exchange, routingKey string, kind Kind, msg amqp.Publishing) error {
+func (p *Publisher) Publish(ctx context.Context, exchange, routingKey string, kind Kind, msg Publishing) error {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -124,7 +132,7 @@ func (p *Publisher) Publish(ctx context.Context, exchange, routingKey string, ki
 		routingKey, // routing key
 		false,      // mandatory
 		false,      // immediate
-		msg,
+		amqp.Publishing(msg),
 	); err != nil {
 		return fmt.Errorf("publish error: %w", err)
 	}
@@ -134,7 +142,7 @@ func (p *Publisher) Publish(ctx context.Context, exchange, routingKey string, ki
 }
 
 // Publish sends it with the given routing key.
-func (p *Publisher) PublishQueue(ctx context.Context, queue string, msg amqp.Publishing) error {
+func (p *Publisher) PublishQueue(ctx context.Context, queue string, msg Publishing) error {
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -173,7 +181,7 @@ func (p *Publisher) PublishQueue(ctx context.Context, queue string, msg amqp.Pub
 		queue,
 		false, // mandatory
 		false, // immediate
-		msg,
+		amqp.Publishing(msg),
 	); err != nil {
 		return fmt.Errorf("publish error: %w", err)
 	}
