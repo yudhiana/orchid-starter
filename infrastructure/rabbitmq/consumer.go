@@ -1,21 +1,14 @@
 package rabbitmq
 
 import (
-	"encoding/json"
 	"fmt"
-	"time"
 
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type Handler func(map[string]any) error
+type Handler func(Publishing) error
 
 // EventData struct for event data
-type EventData struct {
-	EventType string     `json:"event_type,omitempty"`
-	Data      any        `json:"data,omitempty"`
-	Date      *time.Time `json:"date,omitempty"`
-}
 
 type Consumer struct {
 	conn    *amqp.Connection
@@ -91,13 +84,23 @@ func (c *Consumer) Consume(autoAck bool, handler Handler) error {
 		return fmt.Errorf("consume queue error: %w", errDeliv)
 	}
 
-	var mapData map[string]any
-	for d := range deliveries {
-		if errUnMarshal := json.Unmarshal(d.Body, &mapData); errUnMarshal != nil {
-			return fmt.Errorf("unmarshal queue body error: %w", errUnMarshal)
-		}
-
-		if errHandler := handler(mapData); errHandler != nil {
+	for delivery := range deliveries {
+		if errHandler := handler(Publishing{
+			AppId:           delivery.AppId,
+			UserId:          delivery.UserId,
+			MessageId:       delivery.MessageId,
+			CorrelationId:   delivery.CorrelationId,
+			Headers:         delivery.Headers,
+			ReplyTo:         delivery.ReplyTo,
+			Expiration:      delivery.Expiration,
+			Type:            delivery.Type,
+			Body:            delivery.Body,
+			ContentType:     delivery.ContentType,
+			ContentEncoding: delivery.ContentEncoding,
+			DeliveryMode:    delivery.DeliveryMode,
+			Timestamp:       delivery.Timestamp,
+			Priority:        delivery.Priority,
+		}); errHandler != nil {
 			return fmt.Errorf("handler error: %w", errHandler)
 		}
 	}

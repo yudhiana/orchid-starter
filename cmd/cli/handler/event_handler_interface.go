@@ -7,7 +7,7 @@ import (
 
 // EventHandlerInterface defines the contract for event handlers
 type EventHandlerInterface interface {
-	Handle(ctx context.Context, event rabbitmq.EventData) error
+	Handle(ctx context.Context, event rabbitmq.Publishing) error
 	GetEventTypes() []string
 }
 

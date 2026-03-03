@@ -3,28 +3,21 @@ package main
 
 import (
 	"context"
-	"net/mail"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	InitHandler "orchid-starter/cmd/cli/handler/init"
+	"orchid-starter/cmd/cli/commands"
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap"
 	"orchid-starter/observability/sentry"
 
 	_ "github.com/joho/godotenv/autoload"
-	"github.com/urfave/cli/v3"
+	"github.com/yudhiana/logos"
 )
 
 func main() {
-	app := &cli.Command{
-		Name:    "Command execution for Go API CLI",
-		Usage:   "Run task by command CLI for Golang",
-		Version: "1.0.0",
-		Authors: []any{
-			mail.Address{Name: "yudhiana", Address: "yudhiana@orchid-starter.co"},
-		},
-	}
-
 	di, err := bootstrap.NewDirectInjection(config.GetLocalConfig())
 	if err != nil {
 		panic("Failed to initialize dependencies: " + err.Error())
@@ -33,11 +26,37 @@ func main() {
 
 	sentry.InitSentry()
 
-	app.Commands = []*cli.Command{
-		InitHandler.NewApplication(di),
-		// TODO : add other commands
-	}
+	go func() {
+		// Wait for interrupt signal
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+		<-quit
 
+		logos.NewLogger().Info("🔴Shutting Cli Application...")
+
+		// Graceful shutdown timeout
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+		defer cancel()
+
+		// perform close in goroutine so we can respect timeout
+		done := make(chan error, 1)
+		go func() {
+			done <- di.Close()
+		}()
+
+		select {
+		case err := <-done:
+			if err != nil {
+				logos.NewLogger().Error("🔴Forced shutdown", "err", err)
+			}
+		case <-ctx.Done():
+			logos.NewLogger().Error("🔴Shutdown timed out", "err", ctx.Err())
+		}
+
+		logos.NewLogger().Info("🔴Cli Application exited properly")
+	}()
+
+	app := commands.NewBaseCommand(di).GetCommands()
 	err = app.Run(context.Background(), os.Args)
 	if err != nil {
 		panic(err.Error())

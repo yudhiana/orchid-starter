@@ -2,30 +2,32 @@ package InitHandler
 
 import (
 	"orchid-starter/cmd/cli/handler"
+	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap"
-	defaultEventHandler "orchid-starter/modules/default/delivery/event"
+	"orchid-starter/modules/default/delivery/event/subscriber"
 
 	"github.com/urfave/cli/v3"
 )
 
 // NewApplication creates a CLI application for company event handling
 func NewApplication(di *bootstrap.DirectInjection) *cli.Command {
-	config := handler.EventHandlerConfig{
+	handlerConfig := handler.EventHandlerConfig{
 		Name:         "cli-init-handler",
 		Alias:        "cih",
 		Usage:        "run cli-init-handler",
 		Description:  "cli-init-handler",
-		QueueName:    "cli-init-event-queue",
-		ExchangeName: "event",
+		QueueName:    "orchid-queue",
+		ExchangeName: "orchid-event",
 		LoggerPrefix: "init-handler",
 	}
 
-	return handler.CreateEventHandlerApplication(config, registerHandlers)(di)
+	appConfig := config.GetLocalConfig()
+	return handler.CreateEventHandlerApplication(handlerConfig, appConfig, registerHandlers)(di)
 }
 
 // registerHandlers registers company-specific event handlers
 func registerHandlers(baseHandler *handler.BaseEventHandler) {
 	// Initialize event handler
-	defaultHandler := defaultEventHandler.NewDefaultEventHandler(baseHandler.GetDI())
+	defaultHandler := subscriber.NewDefaultEventHandler(baseHandler.GetDI())
 	baseHandler.RegisterHandler(defaultHandler)
 }

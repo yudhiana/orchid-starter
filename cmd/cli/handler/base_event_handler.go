@@ -55,10 +55,9 @@ func (h *BaseEventHandler) RegisterHandler(handler EventHandlerInterface) {
 }
 
 // EventHandler processes search engine events using the registry system
-func (h *BaseEventHandler) EventHandler(body map[string]any) (err error) {
+func (h *BaseEventHandler) EventHandler(event rabbitmq.Publishing) (err error) {
 	startTime := time.Now()
 
-	var event rabbitmq.EventData
 	var processingError error
 
 	// Defer logging and error handling
@@ -71,16 +70,16 @@ func (h *BaseEventHandler) EventHandler(body map[string]any) (err error) {
 			}
 
 			h.log.Error("Event processing failed",
-				"event_type", event.EventType,
+				"event_type", event.Type,
 				"action", "event-processing",
 				"error", processingError,
 				"processing_time_ms", processingTime.Milliseconds())
 
-			sentry.SentryLogger(processingError, body)
+			sentry.SentryLogger(processingError, event)
 
 		} else {
 			h.log.Info("Event processed successfully",
-				"event_type", event.EventType,
+				"event_type", event.Type,
 				"action", "event-processing",
 				"processing_time_ms", processingTime.Milliseconds())
 		}
@@ -90,10 +89,10 @@ func (h *BaseEventHandler) EventHandler(body map[string]any) (err error) {
 			h.log.Error("Panic occurred during event processing",
 				"panic", r,
 				"action", "event-processing",
-				"event_type", event.EventType,
+				"event_type", event.Type,
 				"recovery_time", time.Since(startTime))
 
-			sentry.SentryLogger(fmt.Errorf("panic occurred during event processing error: %v", r), body)
+			sentry.SentryLogger(fmt.Errorf("panic occurred during event processing error: %v", r), event)
 		}
 	}()
 
@@ -105,14 +104,14 @@ func (h *BaseEventHandler) EventHandler(body map[string]any) (err error) {
 }
 
 // routeEvent routes the event to the registered handler
-func (h *BaseEventHandler) routeEvent(ctx context.Context, event rabbitmq.EventData) error {
-	handler, exists := h.handlers[event.EventType]
+func (h *BaseEventHandler) routeEvent(ctx context.Context, event rabbitmq.Publishing) error {
+	handler, exists := h.handlers[event.Type]
 
 	if !exists {
-		return bunker.New(bunker.StatusUnprocessableEntity).SetMessage("no handler registered event type")
+		return bunker.New(bunker.StatusUnprocessableEntity).SetMessage(ErrNoHandlerRegistered.Error())
 	}
 
-	h.log.Info("Processing event", "event_type", event.EventType)
+	h.log.Info("Processing event", "event_type", event.Type)
 	return handler.Handle(ctx, event)
 }
 

@@ -1,4 +1,4 @@
-package event
+package subscriber
 
 import (
 	"context"
@@ -28,13 +28,13 @@ func NewDefaultEventHandler(di *bootstrap.DirectInjection) *eventHandler {
 }
 
 // Handle processes default init events based on event type
-func (eh *eventHandler) Handle(ctx context.Context, event rabbitmq.EventData) error {
-	eh.log.Info("Processing default init event", "event_type", event.EventType)
-	switch event.EventType {
+func (eh *eventHandler) Handle(ctx context.Context, event rabbitmq.Publishing) error {
+	eh.log.Info("Processing default init event", "event_type", event.Type)
+	switch event.Type {
 	case EventDefaultName:
 		return eh.DefaultInitEvent(ctx, event)
 	default:
-		return bunker.New(bunker.StatusUnprocessableEntity).SetMessage(fmt.Sprintf("unknown event type: %s", event.EventType))
+		return bunker.New(bunker.StatusUnprocessableEntity).SetMessage(fmt.Sprintf("unknown event type: %s", event.Type))
 	}
 }
 
@@ -45,7 +45,7 @@ func (eh *eventHandler) GetEventTypes() []string {
 	}
 }
 
-func (eh *eventHandler) DefaultInitEvent(ctx context.Context, event rabbitmq.EventData) error {
+func (eh *eventHandler) DefaultInitEvent(ctx context.Context, event rabbitmq.Publishing) error {
 	eh.log.Info("event default successfully executed")
 	return nil
 }

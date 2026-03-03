@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"orchid-starter/config"
 	"orchid-starter/infrastructure/rabbitmq"
 	"orchid-starter/internal/bootstrap"
 
@@ -13,23 +14,25 @@ type HandlerRegistrationFunc func(baseHandler *BaseEventHandler)
 
 // CreateEventHandlerApplication creates a generic CLI application for event handling
 func CreateEventHandlerApplication(
-	config EventHandlerConfig,
+	handlerConfig EventHandlerConfig,
+	appConfig *config.LocalConfig,
 	registerHandlers HandlerRegistrationFunc,
 ) func(di *bootstrap.DirectInjection) *cli.Command {
 	return func(di *bootstrap.DirectInjection) *cli.Command {
 		return &cli.Command{
-			Name:        config.Name,
-			Aliases:     []string{config.Alias},
-			Usage:       config.Usage,
-			Description: config.Description,
+			Name:        handlerConfig.Name,
+			Aliases:     []string{handlerConfig.Alias},
+			Usage:       handlerConfig.Usage,
+			Description: handlerConfig.Description,
 			Action: func(ctx context.Context, cmd *cli.Command) (err error) {
-				consumer, errConn := rabbitmq.NewConsumer("localhost:5672", "events_exchange", "fanout", "events_queue", "#", "event_consumer")
+				rabbitConfig := appConfig.RabbitMQConfig
+				consumer, errConn := rabbitmq.NewConsumer(rabbitConfig.AmqpURI(), handlerConfig.ExchangeName, "fanout", handlerConfig.QueueName, "", "event_consumer")
 				if errConn != nil {
 					return errConn
 				}
 
 				// Create base handler and register specific handlers
-				baseHandler := NewBaseEventHandler(di, config)
+				baseHandler := NewBaseEventHandler(di, handlerConfig)
 				registerHandlers(baseHandler)
 
 				consumer.Consume(false, baseHandler.EventHandler)
