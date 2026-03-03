@@ -9,6 +9,7 @@ import (
 	"context"
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/model"
+	"orchid-starter/modules/default/delivery/event/publisher"
 	"orchid-starter/modules/default/repository"
 	"orchid-starter/modules/default/usecase"
 )
@@ -19,11 +20,12 @@ func (r *queryResolver) Welcome(ctx context.Context) (*model.ResponseWelcome, er
 	db := r.DI.GetMySQL()
 	requestClient := r.DI.GetClient()
 	esClient := r.DI.GetElasticsearch()
+	pub := publisher.NewEventPublisher(r.DI.GetPublisher())
 
 	defaultRepository := repository.NewDefaultRepository(db, esClient)
 
 	// Initialize usecase with client access
-	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient, r.DI.GetPublisher())
+	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient, pub)
 	return &model.ResponseWelcome{
 		Message: uc.GetWelcome(ctx).Message,
 	}, nil
