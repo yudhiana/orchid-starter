@@ -77,7 +77,6 @@ func (c *Consumer) Consume(autoAck bool, handler Handler) error {
 		false,        // noLocal
 		false,        // noWait
 		nil,          // arguments
-
 	)
 
 	if errDeliv != nil {
