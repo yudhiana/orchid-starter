@@ -26,7 +26,7 @@ func CreateEventHandlerApplication(
 			Description: handlerConfig.Description,
 			Action: func(ctx context.Context, cmd *cli.Command) (err error) {
 				rabbitConfig := appConfig.RabbitMQConfig
-				consumer, errConn := rabbitmq.NewConsumer(rabbitConfig.AmqpURI(), handlerConfig.ExchangeName, "fanout", handlerConfig.QueueName, "", "event_consumer")
+				consumer, errConn := rabbitmq.NewConsumer(rabbitConfig.AmqpURI(), handlerConfig.ExchangeName, string(rabbitmq.Fanout), handlerConfig.QueueName, "", "event_consumer")
 				if errConn != nil {
 					return errConn
 				}
