@@ -85,7 +85,7 @@ func (c *Consumer) Consume(autoAck bool, handler Handler) error {
 	}
 
 	for delivery := range deliveries {
-		if errHandler := handler(Publishing{
+		errHandler := handler(Publishing{
 			AppId:           delivery.AppId,
 			UserId:          delivery.UserId,
 			MessageId:       delivery.MessageId,
@@ -100,8 +100,19 @@ func (c *Consumer) Consume(autoAck bool, handler Handler) error {
 			DeliveryMode:    delivery.DeliveryMode,
 			Timestamp:       delivery.Timestamp,
 			Priority:        delivery.Priority,
-		}); errHandler != nil {
-			return fmt.Errorf("handler error: %w", errHandler)
+		})
+
+		if !autoAck {
+			if errHandler != nil {
+				if errNack := delivery.Nack(false, true); errNack != nil {
+					return fmt.Errorf("nack error: %w", errNack)
+				}
+				continue
+			}
+
+			if errAck := delivery.Ack(false); errAck != nil {
+				return fmt.Errorf("ack error: %w", errAck)
+			}
 		}
 	}
 

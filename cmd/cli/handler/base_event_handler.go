@@ -76,13 +76,13 @@ func (h *BaseEventHandler) EventHandler(event rabbitmq.Publishing) (err error) {
 				"processing_time_ms", processingTime.Milliseconds())
 
 			sentry.SentryLogger(processingError, event)
-
-		} else {
-			h.log.Info("Event processed successfully",
-				"event_type", event.Type,
-				"action", "event-processing",
-				"processing_time_ms", processingTime.Milliseconds())
+			return
 		}
+		
+		h.log.Info("Event processed successfully",
+			"event_type", event.Type,
+			"action", "event-processing",
+			"processing_time_ms", processingTime.Milliseconds())
 
 		// Recovery from panics
 		if r := recover(); r != nil {
