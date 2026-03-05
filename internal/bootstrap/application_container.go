@@ -25,7 +25,6 @@ type DirectInjection struct {
 	Redis     *redisV9.Client
 	Client    *clients.Client
 	Publisher rabbitmq.PublisherInterface
-	Log       *logos.LogEntry
 }
 
 // NewApplicationContainer creates a new dependency injection container with proper error handling
@@ -91,7 +90,6 @@ func NewApplicationContainer(cfg *config.LocalConfig) (*DirectInjection, error) 
 		Redis:     redisClient,
 		Publisher: publisher,
 		Client:    clients.NewClient(),
-		Log:       logos.NewLogger(),
 	}
 
 	logger.Info("Dependency injection container initialized successfully")

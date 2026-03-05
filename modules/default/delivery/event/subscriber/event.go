@@ -23,7 +23,7 @@ type eventHandler struct {
 func NewDefaultEventHandler(di *bootstrap.DirectInjection) *eventHandler {
 	return &eventHandler{
 		di:  di,
-		log: di.Log,
+		log: logos.NewLogger(),
 	}
 }
 
