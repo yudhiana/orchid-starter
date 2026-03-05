@@ -30,7 +30,7 @@ func NewContainer() (*Container, error) {
 	logger.Info("Configuration loaded successfully")
 
 	// Initialize dependency injection
-	di, err := NewDirectInjection(cfg)
+	di, err := NewApplicationContainer(cfg)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize dependencies: %w", err)
 	}

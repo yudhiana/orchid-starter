@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	di, err := bootstrap.NewDirectInjection(config.GetLocalConfig())
+	di, err := bootstrap.NewApplicationContainer(config.GetLocalConfig())
 	if err != nil {
 		panic("Failed to initialize dependencies: " + err.Error())
 	}
