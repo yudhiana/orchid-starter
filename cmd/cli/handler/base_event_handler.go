@@ -26,11 +26,9 @@ type BaseEventHandler struct {
 
 // NewBaseEventHandler creates a new base event handler
 func NewBaseEventHandler(di *bootstrap.DirectInjection, config EventHandlerConfig) *BaseEventHandler {
-	di.Log.Info(fmt.Sprintf("Initialize %s search engine event handler", config.LoggerPrefix))
-
 	handler := &BaseEventHandler{
 		di:       di,
-		log:      di.Log,
+		log:      logos.NewLogger(),
 		handlers: make(map[string]EventHandlerInterface),
 		config:   config,
 	}
@@ -78,7 +76,7 @@ func (h *BaseEventHandler) EventHandler(event rabbitmq.Publishing) (err error) {
 			sentry.SentryLogger(processingError, event)
 			return
 		}
-		
+
 		h.log.Info("Event processed successfully",
 			"event_type", event.Type,
 			"action", "event-processing",
