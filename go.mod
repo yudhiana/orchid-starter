@@ -90,7 +90,6 @@ require github.com/DATA-DOG/go-sqlmock v1.5.2
 // ==============================
 require github.com/golang-jwt/jwt/v5 v5.3.1
 
-
 // ==============================
 // Redis
 // ==============================
@@ -98,6 +97,11 @@ require (
 	github.com/go-redis/redismock/v9 v9.2.0
 	github.com/redis/go-redis/v9 v9.18.0
 )
+
+// ==============================
+// UUID
+// ==============================
+require github.com/google/uuid v1.6.0
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -110,7 +114,6 @@ require (
 	github.com/go-sql-driver/mysql v1.9.3 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/goccy/go-yaml v1.19.0 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.1 // indirect
 	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
