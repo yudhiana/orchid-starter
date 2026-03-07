@@ -3,6 +3,8 @@ package bootstrap
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"orchid-starter/config"
@@ -12,6 +14,8 @@ import (
 	"orchid-starter/infrastructure/redis"
 	"orchid-starter/internal/clients"
 	"orchid-starter/internal/common"
+
+	openTelemetri "orchid-starter/observability/open-telemetri"
 
 	"github.com/elastic/go-elasticsearch/v9"
 	redisV9 "github.com/redis/go-redis/v9"
@@ -25,6 +29,7 @@ type DirectInjection struct {
 	Redis     *redisV9.Client
 	Client    *clients.Client
 	Publisher rabbitmq.PublisherInterface
+	Tracer    *openTelemetri.OTel
 }
 
 // NewApplicationContainer creates a new dependency injection container with proper error handling
@@ -90,6 +95,16 @@ func NewApplicationContainer(cfg *config.LocalConfig) (*DirectInjection, error) 
 		Redis:     redisClient,
 		Publisher: publisher,
 		Client:    clients.NewClient(),
+	}
+
+	if common.GetBoolEnv("OTEL_ACTIVE", false) {
+		log.Println("ACTIVE OTEL", os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"))
+		openTelemetri.InitOTel()
+		otel := openTelemetri.GetTraceProvider(context.Background())
+		if otel == nil {
+			return nil, fmt.Errorf("failed to initialize OpenTelemetry")
+		}
+		di.Tracer = otel
 	}
 
 	logger.Info("Dependency injection container initialized successfully")
@@ -159,6 +174,14 @@ func (di *DirectInjection) Close() error {
 			errors = append(errors, fmt.Errorf("failed to closing rabitmq connection: %w", err))
 		} else {
 			logger.Info("🔴RabbitMQ connection closed")
+		}
+	}
+
+	if di.Tracer != nil {
+		if err := di.Tracer.Shutdown(context.Background()); err != nil {
+			errors = append(errors, fmt.Errorf("failed to shutdown OpenTelemetry tracer: %w", err))
+		} else {
+			logger.Info("🔴OpenTelemetry tracer shutdown completed")
 		}
 	}
 

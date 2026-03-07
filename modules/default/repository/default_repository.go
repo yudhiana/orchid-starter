@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	modelDomain "orchid-starter/modules/default/domain/models"
+	openTelemetri "orchid-starter/observability/open-telemetri"
 
 	"github.com/elastic/go-elasticsearch/v9"
 	"gorm.io/gorm"
@@ -21,6 +22,10 @@ func NewDefaultRepository(db *gorm.DB, es *elasticsearch.Client) DefaultReposito
 }
 
 func (repo *defaultRepository) GetWelcome(ctx context.Context) modelDomain.Welcome {
+	tp := openTelemetri.GetTraceProvider(ctx)
+
+	ctx, span := tp.Tracer.Start(ctx, "defaultRepository.GetWelcome")
+	defer span.End()
 	return modelDomain.Welcome{
 		Message: "Welcome to orchid-starter...",
 	}

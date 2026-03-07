@@ -3,8 +3,10 @@ package v2
 import (
 	"net/http"
 	response "orchid-starter/http"
+	"orchid-starter/internal/common"
 	modelResponse "orchid-starter/modules/default/delivery/models/response"
 	"orchid-starter/modules/default/usecase"
+	openTelemetri "orchid-starter/observability/open-telemetri"
 
 	bunker "github.com/yudhiana/bunker/errors"
 )
@@ -20,7 +22,12 @@ func NewDefaultHandler(u usecase.DefaultUsecaseInterface) *defaultHandler {
 }
 
 func (base *defaultHandler) Welcome(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
+	ctx := common.SetRequestContext(r.Context(), r)
+
+	tp := openTelemetri.GetTraceProvider(ctx)
+	ctx, span := tp.Tracer.Start(ctx, "defaultHandler.Welcome")
+	defer span.End()
+
 	welcome := base.usecase.GetWelcome(ctx)
 	response.SuccessResponse(w, modelResponse.WelcomeResponse{
 		Message: welcome.Message,

@@ -11,6 +11,7 @@ import (
 	"orchid-starter/modules/default/delivery/event/publisher"
 	"orchid-starter/modules/default/repository"
 	modelUsecase "orchid-starter/modules/default/usecase/models"
+	openTelemetri "orchid-starter/observability/open-telemetri"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -72,6 +73,10 @@ func (uc *defaultUsecase) GetWelcome(ctx context.Context) (result modelUsecase.G
 	})
 
 	// */
+
+	tp := openTelemetri.GetTraceProvider(ctx)
+	ctx, span := tp.Tracer.Start(ctx, "defaultUsecase.GetWelcome")
+	defer span.End()
 	return modelUsecase.GetWelcome{
 		Message: uc.repository.GetWelcome(ctx).Message,
 	}
