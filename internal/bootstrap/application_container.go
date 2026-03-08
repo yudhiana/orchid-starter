@@ -99,12 +99,7 @@ func NewApplicationContainer(cfg *config.LocalConfig) (*DirectInjection, error) 
 
 	if common.GetBoolEnv("OTEL_ACTIVE", false) {
 		log.Println("ACTIVE OTEL", os.Getenv("OTEL_EXPORTER_OTLP_ENDPOINT"))
-		openTelemetri.InitOTel()
-		otel := openTelemetri.GetTraceProvider(context.Background())
-		if otel == nil {
-			return nil, fmt.Errorf("failed to initialize OpenTelemetry")
-		}
-		di.Tracer = otel
+		di.Tracer = openTelemetri.InitOTelTracer(context.Background())
 	}
 
 	logger.Info("Dependency injection container initialized successfully")
@@ -214,4 +209,8 @@ func (di *DirectInjection) GetClient() *clients.Client {
 
 func (di *DirectInjection) GetPublisher() rabbitmq.PublisherInterface {
 	return di.Publisher
+}
+
+func (di *DirectInjection) GetTracer() *openTelemetri.OTel {
+	return di.Tracer
 }

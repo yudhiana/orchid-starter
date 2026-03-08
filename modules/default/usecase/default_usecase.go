@@ -22,14 +22,16 @@ type defaultUsecase struct {
 	repository repository.DefaultRepositoryInterface
 	client     *clients.Client
 	publishing *publisher.EventPublisher
+	otel       *openTelemetri.OTel
 }
 
-func NewDefaultUsecase(db *gorm.DB, r repository.DefaultRepositoryInterface, client *clients.Client, pub *publisher.EventPublisher) DefaultUsecaseInterface {
+func NewDefaultUsecase(db *gorm.DB, r repository.DefaultRepositoryInterface, client *clients.Client, pub *publisher.EventPublisher, otel *openTelemetri.OTel) DefaultUsecaseInterface {
 	return &defaultUsecase{
 		db:         db,
 		repository: r,
 		client:     client,
 		publishing: pub,
+		otel:       otel,
 	}
 }
 
@@ -74,8 +76,7 @@ func (uc *defaultUsecase) GetWelcome(ctx context.Context) (result modelUsecase.G
 
 	// */
 
-	tp := openTelemetri.GetTraceProvider(ctx)
-	ctx, span := tp.Tracer.Start(ctx, "defaultUsecase.GetWelcome")
+	ctx, span := uc.otel.StartSpan(ctx, "usecase", openTelemetri.GetFuncName())
 	defer span.End()
 	return modelUsecase.GetWelcome{
 		Message: uc.repository.GetWelcome(ctx).Message,

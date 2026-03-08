@@ -13,8 +13,9 @@ import (
 )
 
 func NewDefaultHandler(app chi.Router, di *bootstrap.DirectInjection) {
+	tracer := di.GetTracer()
 
-	defaultRepository := repository.NewDefaultRepository(di.GetMySQL(), di.GetElasticsearch())
+	defaultRepository := repository.NewDefaultRepository(di.GetMySQL(), di.GetElasticsearch(), tracer)
 
 	// Get the comprehensive client for all API operations
 	client := di.GetClient()
@@ -23,8 +24,8 @@ func NewDefaultHandler(app chi.Router, di *bootstrap.DirectInjection) {
 	pub := publisher.NewEventPublisher(di.GetPublisher())
 
 	// Initialize usecase with client access
-	defaultUseCase := usecase.NewDefaultUsecase(di.GetMySQL(), defaultRepository, client, pub)
-	defaultV2 := v2.NewDefaultHandler(defaultUseCase)
+	defaultUseCase := usecase.NewDefaultUsecase(di.GetMySQL(), defaultRepository, client, pub, tracer)
+	defaultV2 := v2.NewDefaultHandler(defaultUseCase, tracer)
 
 	app.Get("/", defaultV2.Welcome)
 	app.Get("/error-check", defaultV2.ErrorResponse)

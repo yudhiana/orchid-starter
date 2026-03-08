@@ -13,19 +13,20 @@ import (
 
 type defaultHandler struct {
 	usecase usecase.DefaultUsecaseInterface
+	otel    *openTelemetri.OTel
 }
 
-func NewDefaultHandler(u usecase.DefaultUsecaseInterface) *defaultHandler {
+func NewDefaultHandler(u usecase.DefaultUsecaseInterface, otel *openTelemetri.OTel) *defaultHandler {
 	return &defaultHandler{
 		usecase: u,
+		otel:    otel,
 	}
 }
 
 func (base *defaultHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	ctx := common.SetRequestContext(r.Context(), r)
 
-	tp := openTelemetri.GetTraceProvider(ctx)
-	ctx, span := tp.Tracer.Start(ctx, "defaultHandler.Welcome")
+	ctx, span := base.otel.StartSpan(ctx, "handler", openTelemetri.GetFuncName())
 	defer span.End()
 
 	welcome := base.usecase.GetWelcome(ctx)

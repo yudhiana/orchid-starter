@@ -10,8 +10,8 @@ services:
       MYSQL_DATABASE: orchid_db
       MYSQL_USER: orchid_user
       MYSQL_PASSWORD: orchid_password
-    ports:
-      - "3306:3306"
+    expose:
+      - 3306
     volumes:
       - mysql_data:/var/lib/mysql
     networks:
@@ -29,9 +29,9 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
       - ES_JAVA_OPTS=-Xms512m -Xmx512m -Dcom.sun.jndi.ldap.connect.pool=false
-    ports:
-      - "9200:9200"
-      - "9300:9300"
+    expose:
+      - 9200
+      - 9300
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
     networks:
@@ -65,8 +65,8 @@ services:
     image: redis:7.2-alpine
     container_name: orchid-redis-dev
     command: redis-server --appendonly yes
-    ports:
-      - "6379:6379"
+    expose:
+      - 6379
     volumes:
       - redis_data:/data
     networks:

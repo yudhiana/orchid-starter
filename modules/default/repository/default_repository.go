@@ -12,20 +12,25 @@ import (
 type defaultRepository struct {
 	esClient *elasticsearch.Client
 	db       *gorm.DB
+	otel     *openTelemetri.OTel
 }
 
-func NewDefaultRepository(db *gorm.DB, es *elasticsearch.Client) DefaultRepositoryInterface {
+func NewDefaultRepository(db *gorm.DB, es *elasticsearch.Client, otel *openTelemetri.OTel) DefaultRepositoryInterface {
 	return &defaultRepository{
 		esClient: es,
 		db:       db,
+		otel:     otel,
 	}
 }
 
 func (repo *defaultRepository) GetWelcome(ctx context.Context) modelDomain.Welcome {
-	tp := openTelemetri.GetTraceProvider(ctx)
-
-	ctx, span := tp.Tracer.Start(ctx, "defaultRepository.GetWelcome")
+	ctx, span := repo.otel.StartSpan(ctx, "repository", openTelemetri.GetFuncName())
+	span.SetAttributes(openTelemetri.MakeTags(map[string]any{
+		"repo":   "default repo",
+		"method": "GetWelcome",
+	})...)
 	defer span.End()
+
 	return modelDomain.Welcome{
 		Message: "Welcome to orchid-starter...",
 	}

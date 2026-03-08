@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# Looping 10000 kali
+for i in $(seq 1 10000); do
+    echo "Request #$i"
+    curl -av localhost:8080
+    echo ""  # Tambahkan baris kosong supaya output lebih rapi
+done

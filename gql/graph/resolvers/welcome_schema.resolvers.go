@@ -9,26 +9,24 @@ import (
 	"context"
 	"orchid-starter/gql/graph/generated"
 	"orchid-starter/gql/graph/model"
-	"orchid-starter/modules/default/delivery/event/publisher"
-	"orchid-starter/modules/default/repository"
-	"orchid-starter/modules/default/usecase"
 )
 
 // Welcome is the resolver for the welcome field.
 func (r *queryResolver) Welcome(ctx context.Context) (*model.ResponseWelcome, error) {
 
-	db := r.DI.GetMySQL()
-	requestClient := r.DI.GetClient()
-	esClient := r.DI.GetElasticsearch()
-	pub := publisher.NewEventPublisher(r.DI.GetPublisher())
+	// db := r.DI.GetMySQL()
+	// requestClient := r.DI.GetClient()
+	// esClient := r.DI.GetElasticsearch()
+	// pub := publisher.NewEventPublisher(r.DI.GetPublisher())
 
-	defaultRepository := repository.NewDefaultRepository(db, esClient)
+	// defaultRepository := repository.NewDefaultRepository(db, esClient, r.DI.GetTracer())
 
 	// Initialize usecase with client access
-	uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient, pub)
-	return &model.ResponseWelcome{
-		Message: uc.GetWelcome(ctx).Message,
-	}, nil
+	// uc := usecase.NewDefaultUsecase(db, defaultRepository, requestClient, pub, r.DI.GetTracer())
+	// return &model.ResponseWelcome{
+	// 	Message: uc.GetWelcome(ctx).Message,
+	// }, nil
+	return nil, nil
 }
 
 // Query returns generated.QueryResolver implementation.
