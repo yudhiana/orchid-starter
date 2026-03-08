@@ -1,9 +1,8 @@
 package server
 
 import (
+	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
 	"sync"
-
-	http "orchid-starter/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -25,7 +24,7 @@ func GetChiApplication() *chi.Mux {
 		app := chi.NewRouter()
 		app.Use(middleware.RequestID)
 		app.Use(middleware.Logger)
-		app.NotFound(http.NotFoundHandler)
+		app.NotFound(httpUtil.NotFoundHandler)
 		chiAppInstance = &chiApplication{
 			app: app,
 		}

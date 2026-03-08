@@ -1,8 +1,8 @@
 package api
 
 import (
-	"orchid-starter/http"
 	"orchid-starter/internal/bootstrap/container"
+	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
 	"orchid-starter/modules/example/repository"
 	"orchid-starter/modules/example/usecase"
 
@@ -29,5 +29,5 @@ func NewExampleHandler(app chi.Router, di *container.DirectInjection) {
 
 	app.Get("/", exampleV1.Welcome)
 	app.Get("/error-check", exampleV1.ErrorResponse)
-	app.Get("/health-check", http.HealthCheckHandler)
+	app.Get("/health-check", httpUtil.HealthCheckHandler)
 }

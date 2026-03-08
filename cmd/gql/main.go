@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 	"orchid-starter/internal/bootstrap/container"
-	gqlServer "orchid-starter/internal/bootstrap/server/gql_server"
+	gqlServer "orchid-starter/internal/bootstrap/server/gql-server"
 	"orchid-starter/observability/sentry"
 )
 

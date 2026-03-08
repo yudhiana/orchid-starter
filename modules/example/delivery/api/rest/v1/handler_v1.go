@@ -2,7 +2,7 @@ package v1
 
 import (
 	"net/http"
-	response "orchid-starter/http"
+	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
 	"orchid-starter/internal/common"
 	modelResponse "orchid-starter/modules/example/delivery/models/response"
 	"orchid-starter/modules/example/usecase"
@@ -30,12 +30,12 @@ func (base *exampleHandler) Welcome(w http.ResponseWriter, r *http.Request) {
 	defer span.End()
 
 	welcome := base.usecase.GetWelcome(ctx)
-	response.SuccessResponse(w, modelResponse.WelcomeResponse{
+	httpUtil.SuccessResponse(w, modelResponse.WelcomeResponse{
 		Message: welcome.Message,
 	})
 }
 
 func (base *exampleHandler) ErrorResponse(w http.ResponseWriter, r *http.Request) {
 	err := bunker.New(bunker.StatusBadRequest).SetMessage("Error occurred")
-	response.ErrorResponse(w, err)
+	httpUtil.ErrorResponse(w, err)
 }

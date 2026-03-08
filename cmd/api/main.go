@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"orchid-starter/internal/bootstrap/container"
-	restfulServer "orchid-starter/internal/bootstrap/server/restful_server"
+	restfulServer "orchid-starter/internal/bootstrap/server/restful-server"
 	"orchid-starter/observability/prometheus"
 	"orchid-starter/observability/sentry"
 
