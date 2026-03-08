@@ -7,7 +7,7 @@ import (
 
 	initTaskApplication "orchid-starter/cmd/task/init"
 	"orchid-starter/config"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 	"orchid-starter/observability/sentry"
 
 	"github.com/urfave/cli/v3"
@@ -26,7 +26,7 @@ func main() {
 	}
 	sentry.InitSentry()
 
-	di, err := bootstrap.NewApplicationContainer(config.GetLocalConfig())
+	di, err := container.NewApplicationContainer(config.GetLocalConfig())
 	if err != nil {
 		panic("Failed to initialize dependencies: " + err.Error())
 	}

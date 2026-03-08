@@ -4,7 +4,7 @@ import (
 	"context"
 	"orchid-starter/config"
 	"orchid-starter/infrastructure/rabbitmq"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 
 	"github.com/urfave/cli/v3"
 )
@@ -17,8 +17,8 @@ func CreateEventHandlerApplication(
 	handlerConfig EventHandlerConfig,
 	appConfig *config.LocalConfig,
 	registerHandlers HandlerRegistrationFunc,
-) func(di *bootstrap.DirectInjection) *cli.Command {
-	return func(di *bootstrap.DirectInjection) *cli.Command {
+) func(di *container.DirectInjection) *cli.Command {
+	return func(di *container.DirectInjection) *cli.Command {
 		return &cli.Command{
 			Name:        handlerConfig.Name,
 			Aliases:     []string{handlerConfig.Alias},

@@ -4,12 +4,12 @@ import (
 	"context"
 	"orchid-starter/cmd/task/init/handler/task"
 	modelInit "orchid-starter/cmd/task/init/model"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 
 	"github.com/urfave/cli/v3"
 )
 
-func NewInitTask(di *bootstrap.DirectInjection) *cli.Command {
+func NewInitTask(di *container.DirectInjection) *cli.Command {
 	return &cli.Command{
 		Name:    "init-task",
 		Aliases: []string{"init-task"},

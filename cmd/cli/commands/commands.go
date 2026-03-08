@@ -3,17 +3,17 @@ package commands
 import (
 	"net/mail"
 	InitHandler "orchid-starter/cmd/cli/handler/init"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 
 	"github.com/urfave/cli/v3"
 )
 
 type BaseCommand struct {
 	*cli.Command
-	*bootstrap.DirectInjection
+	*container.DirectInjection
 }
 
-func NewBaseCommand(di *bootstrap.DirectInjection) *BaseCommand {
+func NewBaseCommand(di *container.DirectInjection) *BaseCommand {
 	app := &cli.Command{
 		Name:    "Command execution for Go API CLI",
 		Usage:   "Run task by command CLI for Golang",

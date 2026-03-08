@@ -2,18 +2,18 @@ package task
 
 import (
 	modelInit "orchid-starter/cmd/task/init/model"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 
 	"github.com/yudhiana/logos"
 )
 
 type initTask struct {
-	di   *bootstrap.DirectInjection
+	di   *container.DirectInjection
 	init modelInit.Init
 	log  *logos.LogEntry
 }
 
-func NewTask(di *bootstrap.DirectInjection, init modelInit.Init) *initTask {
+func NewTask(di *container.DirectInjection, init modelInit.Init) *initTask {
 	return &initTask{
 		di:   di,
 		init: init,

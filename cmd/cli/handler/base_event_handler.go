@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"orchid-starter/infrastructure/rabbitmq"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 	"orchid-starter/observability/sentry"
 
 	bunker "github.com/yudhiana/bunker/errors"
@@ -18,14 +18,14 @@ var ErrNoHandlerRegistered = errors.New("no handler registered event type")
 
 // BaseEventHandler provides common functionality for all event handlers
 type BaseEventHandler struct {
-	di       *bootstrap.DirectInjection
+	di       *container.DirectInjection
 	log      *logos.LogEntry
 	handlers map[string]EventHandlerInterface
 	config   EventHandlerConfig
 }
 
 // NewBaseEventHandler creates a new base event handler
-func NewBaseEventHandler(di *bootstrap.DirectInjection, config EventHandlerConfig) *BaseEventHandler {
+func NewBaseEventHandler(di *container.DirectInjection, config EventHandlerConfig) *BaseEventHandler {
 	handler := &BaseEventHandler{
 		di:       di,
 		log:      logos.NewLogger(),
@@ -133,6 +133,6 @@ func (h *BaseEventHandler) HealthCheck() map[string]any {
 }
 
 // GetDI returns the dependency injection container
-func (h *BaseEventHandler) GetDI() *bootstrap.DirectInjection {
+func (h *BaseEventHandler) GetDI() *container.DirectInjection {
 	return h.di
 }

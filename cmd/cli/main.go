@@ -9,7 +9,7 @@ import (
 
 	"orchid-starter/cmd/cli/commands"
 	"orchid-starter/config"
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 	"orchid-starter/observability/sentry"
 
 	_ "github.com/joho/godotenv/autoload"
@@ -17,7 +17,7 @@ import (
 )
 
 func main() {
-	di, err := bootstrap.NewApplicationContainer(config.GetLocalConfig())
+	di, err := container.NewApplicationContainer(config.GetLocalConfig())
 	if err != nil {
 		panic("Failed to initialize dependencies: " + err.Error())
 	}
