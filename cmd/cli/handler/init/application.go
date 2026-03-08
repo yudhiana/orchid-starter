@@ -4,7 +4,7 @@ import (
 	"orchid-starter/cmd/cli/handler"
 	"orchid-starter/config"
 	"orchid-starter/internal/bootstrap"
-	"orchid-starter/modules/default/delivery/event/subscriber"
+	"orchid-starter/modules/example/delivery/event/subscriber"
 
 	"github.com/urfave/cli/v3"
 )
@@ -28,6 +28,6 @@ func NewApplication(di *bootstrap.DirectInjection) *cli.Command {
 // registerHandlers registers company-specific event handlers
 func registerHandlers(baseHandler *handler.BaseEventHandler) {
 	// Initialize event handler
-	defaultHandler := subscriber.NewDefaultEventHandler(baseHandler.GetDI())
-	baseHandler.RegisterHandler(defaultHandler)
+	exampleHandler := subscriber.NewExampleEventHandler(baseHandler.GetDI())
+	baseHandler.RegisterHandler(exampleHandler)
 }

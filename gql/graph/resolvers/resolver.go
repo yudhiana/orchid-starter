@@ -1,6 +1,6 @@
 package resolvers
 
-import "orchid-starter/internal/bootstrap"
+import "orchid-starter/internal/bootstrap/container"
 
 // This file will not be regenerated automatically.
 //
@@ -8,5 +8,5 @@ import "orchid-starter/internal/bootstrap"
 // here.
 
 type Resolver struct {
-	DI *bootstrap.DirectInjection
+	DI *container.DirectInjection
 }

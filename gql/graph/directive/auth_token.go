@@ -1,14 +1,14 @@
 package directive
 
 import (
-	"orchid-starter/internal/bootstrap"
+	"orchid-starter/internal/bootstrap/container"
 )
 
 type Directive struct {
-	DI *bootstrap.DirectInjection
+	DI *container.DirectInjection
 }
 
-func NewDirective(di *bootstrap.DirectInjection) *Directive {
+func NewDirective(di *container.DirectInjection) *Directive {
 	return &Directive{
 		DI: di,
 	}

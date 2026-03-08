@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"orchid-starter/internal/bootstrap"
-	"orchid-starter/internal/bootstrap/server"
+	"orchid-starter/internal/bootstrap/container"
+	restfulServer "orchid-starter/internal/bootstrap/server/restful_server"
 	"orchid-starter/observability/prometheus"
 	"orchid-starter/observability/sentry"
 
@@ -17,7 +17,7 @@ func init() {
 
 func main() {
 	// Initialize bootstrap container
-	container, err := bootstrap.NewContainer()
+	container, err := container.NewContainer()
 	if err != nil {
 		log.Fatalf("Failed to initialize application container: %v", err)
 	}
@@ -26,7 +26,7 @@ func main() {
 	sentry.InitSentry()
 
 	// Initialize and start server
-	srv := server.NewServer(container)
+	srv := restfulServer.NewServer(container)
 	if err := srv.Run(); err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
