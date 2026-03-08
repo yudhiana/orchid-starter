@@ -2,14 +2,14 @@ package main
 
 import (
 	"log"
-	"orchid-starter/internal/bootstrap"
-	gqlServer "orchid-starter/internal/bootstrap/gql_server"
+	"orchid-starter/internal/bootstrap/container"
+	gqlServer "orchid-starter/internal/bootstrap/server/gql_server"
 	"orchid-starter/observability/sentry"
 )
 
 func main() {
 	// Initialize bootstrap container
-	container, err := bootstrap.NewContainer()
+	container, err := container.NewContainer()
 	if err != nil {
 		log.Fatalf("Failed to initialize application container: %v", err)
 	}
