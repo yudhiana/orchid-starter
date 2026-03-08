@@ -2,7 +2,7 @@ package v1
 
 import (
 	"net/http"
-	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
+	httpUtil "orchid-starter/internal/bootstrap/server/restful_server/http_util"
 	"orchid-starter/internal/common"
 	modelResponse "orchid-starter/modules/example/delivery/models/response"
 	"orchid-starter/modules/example/usecase"

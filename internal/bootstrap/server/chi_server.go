@@ -1,7 +1,7 @@
 package server
 
 import (
-	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
+	httpUtil "orchid-starter/internal/bootstrap/server/restful_server/http_util"
 	"sync"
 
 	"github.com/go-chi/chi/v5"

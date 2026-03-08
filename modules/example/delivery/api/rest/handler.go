@@ -2,7 +2,7 @@ package api
 
 import (
 	"orchid-starter/internal/bootstrap/container"
-	httpUtil "orchid-starter/internal/bootstrap/server/restful-server/http-util"
+	httpUtil "orchid-starter/internal/bootstrap/server/restful_server/http_util"
 	"orchid-starter/modules/example/repository"
 	"orchid-starter/modules/example/usecase"
 
