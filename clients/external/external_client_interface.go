@@ -4,13 +4,13 @@ import (
 	emailService "orchid-starter/clients/external/email-service"
 )
 
-type ExternalClient struct {
+type ExternalClientService struct {
 	// TODO : add others service
 	EmailService emailService.EmailServiceInterface
 }
 
-func ApplyExternalClient() *ExternalClient {
-	return &ExternalClient{
+func ApplyExternalClient() *ExternalClientService {
+	return &ExternalClientService{
 		EmailService: emailService.GetEmailService(),
 	}
 }

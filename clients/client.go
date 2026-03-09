@@ -6,13 +6,13 @@ import (
 )
 
 type Client struct {
-	InternalClient internalClient.InternalClientInterface
-	ExternalClient *externalClient.ExternalClient
+	InternalClient *internalClient.InternalClientService
+	ExternalClient *externalClient.ExternalClientService
 }
 
 func NewClient() *Client {
 	return &Client{
-		InternalClient: internalClient.NewInternalClient(),
+		InternalClient: internalClient.ApplyInternalClient(),
 		ExternalClient: externalClient.ApplyExternalClient(),
 	}
 }
