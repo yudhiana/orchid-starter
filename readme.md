@@ -81,21 +81,21 @@ If wants to generate module boilerplate code:
 
 ## 📁 Project Structure
 ```text
-.
-├── cmd/                # Application entrypoints (API, CLI, GraphQL, background tasks)
-├── config/             # Application configuration and config models
-├── constants/          # Global constants (API, context keys, timezone, etc.)
-├── docker/             # Docker build configuration
-├── gql/                # GraphQL schemas, resolvers, and generated code
-├── http/               # HTTP handlers (health check, common responses)
-├── infrastructure/     # External service integrations (DB, message broker, search)
-├── internal/           # Application bootstrap, server setup, clients, and shared utilities
-├── middleware/         # HTTP / GraphQL middleware
-├── modules/            # Feature-based domain modules (usecase, repository, delivery)
-├── observability/      # Monitoring, metrics, and error tracking
-├── pkg/                # Reusable packages shared across modules
-├── scripts/            # Helper scripts for code generation and tooling
-└── security/           # Security-related utilities (hashing, etc.)
+orchid-starter/
+│
+├── cmd/                    → Entrypoints (api, gql, cli, task)
+├── modules/                → Business domain logic (core application)
+├── internal/               → Private application logic
+├── clients/                → Inter-service communication
+├── infrastructure/         → Connections to infrastructure systems
+├── observability/          → Monitoring, tracing & error tracking
+├── pkg/                    → Third-party library wrappers
+├── security/               → Auth & cryptography utilities
+├── constants/              → Application-wide constants
+├── config/                 → Configuration loader
+├── gql/                    → GraphQL schemas & generated code
+├── scripts/                → Developer tooling
+└── docker/                 → Container setup
 
 ```
 
