@@ -2,18 +2,13 @@ package usecase
 
 import (
 	"context"
-	"os"
-	"time"
 
 	"orchid-starter/clients"
-	"orchid-starter/infrastructure/rabbitmq"
-	"orchid-starter/internal/common"
 	"orchid-starter/modules/example/delivery/event/publisher"
 	"orchid-starter/modules/example/repository"
 	modelUsecase "orchid-starter/modules/example/usecase/models"
 	openTelemetry "orchid-starter/observability/open-telemetry"
 
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -57,24 +52,23 @@ func (uc *exampleUsecase) GetWelcome(ctx context.Context) (result modelUsecase.G
 				result = repo.Welcome()
 				return nil
 			})
+
+
+			// Example use for event publisher!
+			uc.publishing.PublishExampleCreated(context.Background(), "orchid-event", "orchid.example.created", rabbitmq.Fanout, rabbitmq.Publishing{
+				ContentType: "application/json",
+				Type:        "example-init-event-name",
+				AppId:       os.Getenv("APP_NAME"),
+				Headers: map[string]any{
+					"request-id": common.GetRequestIDFromContext(ctx),
+				},
+				MessageId:    uuid.NewString(),
+				Timestamp:    time.Now().UTC(),
+				DeliveryMode: rabbitmq.Persistent,
+				Body:         []byte(`{"message": "example created event published"}`),
+			})
+
 	*/
-
-	// /*
-	// Example use for event publisher!
-	uc.publishing.PublishExampleCreated(context.Background(), "orchid-event", "orchid.example.created", rabbitmq.Fanout, rabbitmq.Publishing{
-		ContentType: "application/json",
-		Type:        "example-init-event-name",
-		AppId:       os.Getenv("APP_NAME"),
-		Headers: map[string]any{
-			"request-id": common.GetRequestIDFromContext(ctx),
-		},
-		MessageId:    uuid.NewString(),
-		Timestamp:    time.Now().UTC(),
-		DeliveryMode: rabbitmq.Persistent,
-		Body:         []byte(`{"message": "example created event published"}`),
-	})
-
-	// */
 
 	ctx, span := uc.otel.StartSpan(ctx, "usecase", openTelemetry.GetFuncName())
 	defer span.End()
